@@ -1,0 +1,39 @@
+@model List<IglesiaGo.Models.Enseñanza>
+@{
+    ViewData["Title"] = "Enseñanzas";
+}
+
+<div class="bg-dark text-white py-5 mb-5">
+    <div class="container text-center">
+        <h1 class="display-5 fw-bold">ENSEÑANZAS BÍBLICAS</h1>
+        <p>Crecimiento espiritual a un clic de distancia.</p>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row">
+        @if (Model != null && Model.Any())
+        {
+            foreach (var item in Model)
+            {
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="ratio ratio-16x9">
+                            <iframe src="@item.VideoUrl" title="YouTube video" allowfullscreen></iframe>
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title fw-bold">@item.Titulo</h5>
+                            <p class="card-text text-muted">@item.Contenido.Substring(0, Math.Min(item.Contenido.Length, 80))...</p>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="text-center py-5">
+                <p class="text-muted">Próximamente subiremos nuevas enseñanzas.</p>
+            </div>
+        }
+    </div>
+</div>
