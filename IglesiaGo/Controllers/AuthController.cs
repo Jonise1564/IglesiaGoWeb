@@ -31,9 +31,8 @@ namespace IglesiaGo.Controllers
         {
             if (ModelState.IsValid)
             {
-                // 1. Validar el usuario contra la DB (MySQL en Laragon)
-                // Nota: En producción, usa hashing para comparar contraseñas
-                var usuario = _context.Usuarios
+                // 1. Validar el usuario contra la DB
+                                var usuario = _context.Usuarios
                     .FirstOrDefault(u => u.Email == model.Email && u.PasswordHash == model.Password);
 
                 if (usuario != null)

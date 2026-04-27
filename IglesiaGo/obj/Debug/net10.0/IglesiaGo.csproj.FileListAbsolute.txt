@@ -193,3 +193,5 @@ C:\Users\JSON\Desktop\IglesiaGoWeb\IglesiaGo\bin\Debug\net10.0\Microsoft.Identit
 C:\Users\JSON\Desktop\IglesiaGoWeb\IglesiaGo\bin\Debug\net10.0\Microsoft.IdentityModel.Protocols.OpenIdConnect.dll
 C:\Users\JSON\Desktop\IglesiaGoWeb\IglesiaGo\bin\Debug\net10.0\Microsoft.IdentityModel.Tokens.dll
 C:\Users\JSON\Desktop\IglesiaGoWeb\IglesiaGo\bin\Debug\net10.0\System.IdentityModel.Tokens.Jwt.dll
+C:\Users\JSON\Desktop\IglesiaGoWeb\IglesiaGo\bin\Debug\net10.0\BCrypt.Net-Next.dll
+C:\Users\JSON\Desktop\IglesiaGoWeb\IglesiaGo\obj\Debug\net10.0\IglesiaGo.sourcelink.json
