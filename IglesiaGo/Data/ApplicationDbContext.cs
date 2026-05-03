@@ -15,7 +15,8 @@ namespace IglesiaGo.Data
         public DbSet<Usuario> Usuarios { get; set; }
         public DbSet<Enseñanza> Enseñanzas { get; set; }
         public DbSet<Noticia> Noticias { get; set; }
-        public DbSet<Contacto> Contactos { get; set; }
+        public DbSet<Contacto> Contacto { get; set; }
+       // public DbSet<IglesiaGo.Models.Contacto> Contacto { get; set; }
 
         // Opcional: Configuración adicional (Fluente API)
         protected override void OnModelCreating(ModelBuilder modelBuilder)

@@ -67,7 +67,7 @@ namespace IglesiaGo.Controllers
                 issuer: _config["Jwt:Issuer"],
                 audience: _config["Jwt:Audience"],
                 claims: claims,
-                expires: DateTime.Now.AddHours(3), // El token vence en 3 horas
+                expires: DateTime.Now.AddHours(1), // El token vence en 10 minutos
                 signingCredentials: creds
             );
 

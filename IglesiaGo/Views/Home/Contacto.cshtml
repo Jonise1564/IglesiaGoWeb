@@ -1,3 +1,5 @@
+@model IglesiaGo.Models.Contacto
+
 @{
     ViewData["Title"] = "Contacto";
 }
@@ -7,28 +9,92 @@
         <div class="col-md-8">
             <div class="card border-0 shadow-lg p-4">
                 <h2 class="text-center fw-bold mb-4">CONTÁCTANOS</h2>
-                <form asp-action="EnviarMensaje" method="post">
+                
+                @* Resumen de errores del servidor *@
+                <div asp-validation-summary="ModelOnly" class="text-danger small mb-3"></div>
+
+                <form asp-action="EnviarMensaje" method="post" id="formContacto">
+                    @Html.AntiForgeryToken()
+
                     <div class="mb-3">
                         <label class="form-label">Nombre Completo</label>
-                        <input type="text" name="NombreRemitente" class="form-control form-control-lg" placeholder="Ej: Jonathan Garay" required>
+                        <input asp-for="NombreRemitente" class="form-control form-control-lg"
+                               placeholder="Ej: Jonathan Garay" required minlength="3" maxlength="100"
+                               pattern="^[a-zA-Z\sñÑáéíóúÁÉÍÓÚ]+$" title="Solo se permiten letras">
+                        <span asp-validation-for="NombreRemitente" class="text-danger small"></span>
                     </div>
+
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label class="form-label">Email</label>
-                            <input type="email" name="mail" class="form-control" placeholder="nombre@ejemplo.com" required>
+                            <input asp-for="mail" class="form-control" placeholder="nombre@ejemplo.com"
+                                   required maxlength="100">
+                            <span asp-validation-for="mail" class="text-danger small"></span>
                         </div>
                         <div class="col-md-6 mb-3">
                             <label class="form-label">Teléfono</label>
-                            <input type="tel" name="Telefono" class="form-control" placeholder="2664...">
+                            <input asp-for="Telefono" class="form-control" placeholder="Ej: 2664123456"
+                                   required inputmode="numeric" onkeypress="return /^[0-9]$/i.test(event.key)"
+                                   maxlength="15">
+                            <span asp-validation-for="Telefono" class="text-danger small"></span>
                         </div>
                     </div>
+
                     <div class="mb-3">
                         <label class="form-label">Mensaje</label>
-                        <textarea name="Mensaje" class="form-control" rows="4" placeholder="¿En qué podemos ayudarte?"></textarea>
+                        <textarea asp-for="Mensaje" class="form-control" rows="4" 
+                                  placeholder="¿En qué podemos ayudarte?" required maxlength="500"></textarea>
+                        <div class="d-flex justify-content-between">
+                            <span asp-validation-for="Mensaje" class="text-danger small"></span>
+                            <div class="form-text text-end" id="charCount">0 / 500</div>
+                        </div>
                     </div>
+
                     <button type="submit" class="btn btn-primary btn-lg w-100">ENVIAR MENSAJE</button>
                 </form>
             </div>
         </div>
     </div>
 </div>
+
+@section Scripts {
+    @* Validaciones de jQuery para que no recargue la página en errores simples *@
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // 1. Check TempData
+            const msgTempData = "@Html.Raw(TempData["Success"] ?? "")";
+            
+            // 2. Check URL Parameter
+            const params = new URLSearchParams(window.location.search);
+            const fueEnviado = params.get('enviado');
+
+            if (msgTempData.length > 0 || fueEnviado === 'true') {
+                Swal.fire({
+                    title: '¡Confirmado!',
+                    text: msgTempData.length > 0 ? msgTempData : 'Tu mensaje ha sido enviado con éxito.',
+                    icon: 'success',
+                    confirmButtonText: 'Aceptar',
+                    confirmButtonColor: '#0d6efd'
+                });
+
+                window.history.replaceState({}, document.title, window.location.pathname);
+            }
+
+            // Contador de caracteres
+            const txtArea = document.querySelector('textarea[name="Mensaje"]');
+            const counter = document.getElementById('charCount');
+            if (txtArea && counter) {
+                // Sincronizar contador al cargar (por si vuelve con error)
+                counter.textContent = `${txtArea.value.length} / 500`;
+                
+                txtArea.addEventListener('input', function () {
+                    counter.textContent = `${this.value.length} / 500`;
+                });
+            }
+        });
+    </script>
+}

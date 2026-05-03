@@ -103,7 +103,7 @@ public class HomeController : Controller
         if (ModelState.IsValid)
         {
             contacto.FechaEnvio = DateTime.Now; // Seteamos la fecha actual
-            _context.Contactos.Add(contacto);
+            _context.Contacto.Add(contacto);
             await _context.SaveChangesAsync();
 
             TempData["MensajeEnviado"] = "Gracias por escribirnos. Nos pondremos en contacto pronto.";
