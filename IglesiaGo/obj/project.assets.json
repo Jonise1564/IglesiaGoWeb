@@ -2335,11 +2335,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\JSON\\Desktop\\IglesiaGoWeb\\IglesiaGo\\IglesiaGo.csproj",
+      "projectUniqueName": "C:\\Users\\JSON\\Desktop\\IglesiaGoWeb\\iglesiago\\IglesiaGo.csproj",
       "projectName": "IglesiaGo",
-      "projectPath": "C:\\Users\\JSON\\Desktop\\IglesiaGoWeb\\IglesiaGo\\IglesiaGo.csproj",
+      "projectPath": "C:\\Users\\JSON\\Desktop\\IglesiaGoWeb\\iglesiago\\IglesiaGo.csproj",
       "packagesPath": "C:\\Users\\JSON\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\JSON\\Desktop\\IglesiaGoWeb\\IglesiaGo\\obj\\",
+      "outputPath": "C:\\Users\\JSON\\Desktop\\IglesiaGoWeb\\iglesiago\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\JSON\\AppData\\Roaming\\NuGet\\NuGet.Config"

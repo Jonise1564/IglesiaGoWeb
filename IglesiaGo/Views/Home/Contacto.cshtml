@@ -1,4 +1,4 @@
-@model IglesiaGo.Models.Contacto
+@model IglesiaGo.Models.Consulta
 
 @{
     ViewData["Title"] = "Contacto";
@@ -17,7 +17,7 @@
                     @Html.AntiForgeryToken()
 
                     <div class="mb-3">
-                        <label class="form-label">Nombre Completo</label>
+                        <label asp-for="NombreRemitente" class="form-label">Nombre Completo</label>
                         <input asp-for="NombreRemitente" class="form-control form-control-lg"
                                placeholder="Ej: Jonathan Garay" required minlength="3" maxlength="100"
                                pattern="^[a-zA-Z\sñÑáéíóúÁÉÍÓÚ]+$" title="Solo se permiten letras">
@@ -26,22 +26,22 @@
 
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label class="form-label">Email</label>
+                            <label asp-for="mail" class="form-label">Email</label>
                             <input asp-for="mail" class="form-control" placeholder="nombre@ejemplo.com"
-                                   required maxlength="100">
+                                   required maxlength="150" type="email">
                             <span asp-validation-for="mail" class="text-danger small"></span>
                         </div>
                         <div class="col-md-6 mb-3">
-                            <label class="form-label">Teléfono</label>
+                            <label asp-for="Telefono" class="form-label">Teléfono</label>
                             <input asp-for="Telefono" class="form-control" placeholder="Ej: 2664123456"
-                                   required inputmode="numeric" onkeypress="return /^[0-9]$/i.test(event.key)"
-                                   maxlength="15">
+                                   inputmode="numeric" onkeypress="return /^[0-9]$/i.test(event.key)"
+                                   maxlength="20">
                             <span asp-validation-for="Telefono" class="text-danger small"></span>
                         </div>
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label">Mensaje</label>
+                        <label asp-for="Mensaje" class="form-label">Mensaje</label>
                         <textarea asp-for="Mensaje" class="form-control" rows="4" 
                                   placeholder="¿En qué podemos ayudarte?" required maxlength="500"></textarea>
                         <div class="d-flex justify-content-between">
@@ -65,10 +65,10 @@
 
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-            // 1. Check TempData
-            const msgTempData = "@Html.Raw(TempData["Success"] ?? "")";
+            // 1. Sincronizar con el TempData del Controlador ("MensajeEnviado")
+            const msgTempData = "@Html.Raw(TempData["MensajeEnviado"] ?? "")";
             
-            // 2. Check URL Parameter
+            // 2. Check URL Parameter (opcional por si redireccionas con query string)
             const params = new URLSearchParams(window.location.search);
             const fueEnviado = params.get('enviado');
 
@@ -81,16 +81,15 @@
                     confirmButtonColor: '#0d6efd'
                 });
 
+                // Limpiar la URL y el historial para evitar que el mensaje salga de nuevo al refrescar
                 window.history.replaceState({}, document.title, window.location.pathname);
             }
 
-            // Contador de caracteres
-            const txtArea = document.querySelector('textarea[name="Mensaje"]');
+            // Contador de caracteres para el Textarea
+            const txtArea = document.querySelector('textarea[id="Mensaje"]');
             const counter = document.getElementById('charCount');
             if (txtArea && counter) {
-                // Sincronizar contador al cargar (por si vuelve con error)
                 counter.textContent = `${txtArea.value.length} / 500`;
-                
                 txtArea.addEventListener('input', function () {
                     counter.textContent = `${this.value.length} / 500`;
                 });

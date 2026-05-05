@@ -1,56 +1,8 @@
-// using System.Diagnostics;
-// using Microsoft.AspNetCore.Mvc;
-// using IglesiaGo.Models;
-// using IglesiaGo.Data; // Importante para acceder a la DB
-// using System.Linq;
-
-// namespace IglesiaGo.Controllers;
-
-// public class HomeController : Controller
-// {
-//     private readonly ApplicationDbContext _context;
-
-//     // El constructor recibe el contexto de la base de datos
-//     public HomeController(ApplicationDbContext context)
-//     {
-//         _context = context;
-//     }
-
-//     public IActionResult Index()
-//     {
-//         // Traemos las últimas 3 noticias para el Home
-//         var noticias = _context.Noticias
-//             .OrderByDescending(n => n.Fecha)
-//             .Take(3)
-//             .ToList();
-
-//         return View(noticias); // Pasamos la lista a la Vista
-//     }
-
-//     public IActionResult QuienesSomos()
-//     {
-//         return View();
-//     }
-
-//     public IActionResult Contacto()
-//     {
-//         return View();
-//     }
-
-//     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-//     public IActionResult Error()
-//     {
-//         return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-//     }
-// }
-
-
-
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using IglesiaGo.Models;
 using IglesiaGo.Data;
-using System.Linq;
+using Microsoft.EntityFrameworkCore;
 
 namespace IglesiaGo.Controllers;
 
@@ -63,24 +15,23 @@ public class HomeController : Controller
         _context = context;
     }
 
-    // PÁGINA DE INICIO: Carga las noticias
+    // PÁGINA DE INICIO: Carga las noticias ordenadas por fecha
     public IActionResult Index()
     {
         var noticias = _context.Noticias
             .OrderByDescending(n => n.Fecha)
-            // .Take(3)
             .ToList();
 
         return View(noticias);
     }
 
-    // QUIÉNES SOMOS: Solo devuelve la vista estática
+    // QUIÉNES SOMOS: Vista estática institucional
     public IActionResult QuienesSomos()
     {
         return View();
     }
 
-    // ENSEÑANZAS BÍBLICAS: Carga la lista de enseñanzas de la DB
+    // ENSEÑANZAS BÍBLICAS: Lista de enseñanzas desde la DB
     public IActionResult Ensenanzas()
     {
         var ensenanzas = _context.Enseñanzas
@@ -90,56 +41,59 @@ public class HomeController : Controller
         return View(ensenanzas);
     }
 
-    // CONTACTO (GET): Muestra el formulario
+    // CONTACTO (GET): Muestra el formulario vacío
     public IActionResult Contacto()
     {
         return View();
     }
 
-    // CONTACTO (POST): Recibe los datos del formulario y los guarda en Laragon
+    // CONTACTO (POST): Procesa y guarda la nueva Consulta
     [HttpPost]
-    public async Task<IActionResult> EnviarMensaje(Contacto contacto)
+    public async Task<IActionResult> EnviarMensaje(Consulta consulta)
     {
         if (ModelState.IsValid)
         {
-            contacto.FechaEnvio = DateTime.Now; // Seteamos la fecha actual
-            _context.Contacto.Add(contacto);
-            await _context.SaveChangesAsync();
+            try 
+            {
+                // Asignamos valores por defecto antes de guardar
+                consulta.FechaCreacion = DateTime.Now; 
+                consulta.Atendido = false;
 
-            TempData["MensajeEnviado"] = "Gracias por escribirnos. Nos pondremos en contacto pronto.";
-            return RedirectToAction("Contacto");
+                _context.Consultas.Add(consulta);
+                await _context.SaveChangesAsync();
+
+                TempData["MensajeEnviado"] = "Gracias por escribirnos. Nos pondremos en contacto pronto.";
+                return RedirectToAction("Contacto");
+            }
+            catch (Exception)
+            {
+                ModelState.AddModelError("", "Error al intentar guardar en la base de datos.");
+            }
         }
 
-        return View("Contacto", contacto);
+        // Si el modelo no es válido, regresamos a la vista con los errores
+        return View("Contacto", consulta);
     }
 
-    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-    public IActionResult Error()
-    {
-        return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-    }
-
-
-    // GET: Muestra la vista de Login
+    // LOGIN (GET): Muestra el formulario de acceso
     public IActionResult Login()
     {
         return View();
     }
 
-    // POST: Procesa el inicio de sesión
+    // LOGIN (POST): Valida las credenciales del usuario
     [HttpPost]
     public IActionResult Login(LoginViewModel model)
     {
         if (ModelState.IsValid)
         {
-            // Buscamos el usuario en la base de datos de Laragon
+            // Búsqueda simple (Para producción considera usar Hash real de contraseñas)
             var usuario = _context.Usuarios
                 .FirstOrDefault(u => u.Email == model.Email && u.PasswordHash == model.Password);
 
             if (usuario != null)
             {
-                // AQUÍ: En un sistema real usarías Claims y Cookies. 
-                // Por ahora, simulamos el éxito:
+                // Aquí podrías implementar el manejo de Cookies o JWT
                 return RedirectToAction("Index");
             }
 
@@ -148,5 +102,10 @@ public class HomeController : Controller
         return View(model);
     }
 
-
+    // MANEJO DE ERRORES
+    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+    public IActionResult Error()
+    {
+        return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+    }
 }
