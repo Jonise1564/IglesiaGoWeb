@@ -1,0 +1,155 @@
+@model IglesiaGo.Models.Persona
+
+<div class="card border-0 shadow-lg p-4">
+    <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-2">
+        <h2 class="fw-bold text-uppercase m-0 text-primary">
+            @if (Model != null && Model.Id > 0)
+            {
+                <span><i class="fa-solid fa-user-pen me-2"></i>Editar Miembro</span>
+            }
+            else
+            {
+                <span><i class="fa-solid fa-user-plus me-2"></i>Nuevo Miembro</span>
+            }
+        </h2>
+    </div>
+    
+    @* Resumen de errores del servidor *@
+    <div asp-validation-summary="ModelOnly" class="text-danger small mb-3"></div>
+
+    <form asp-action="GuardarPersona" asp-controller="Personas" method="post" id="formPersonasSection">
+        @Html.AntiForgeryToken()
+        
+        @* Campos ocultos para persistencia *@
+        <input type="hidden" asp-for="Id" />
+        <input type="hidden" asp-for="Activo" />
+
+        <h5 class="text-secondary fw-semibold mb-3 border-bottom pb-1">
+            <i class="fa-solid fa-id-card me-2"></i>Datos Personales
+        </h5>
+        <div class="row">
+            <div class="col-md-4 mb-3">
+                <label asp-for="DocumentoIdentidad" class="form-label">Documento / DNI *</label>
+                <input asp-for="DocumentoIdentidad" class="form-control" placeholder="Ej: 34567890" required maxlength="20">
+                <span asp-validation-for="DocumentoIdentidad" class="text-danger small"></span>
+            </div>
+            <div class="col-md-4 mb-3">
+                <label asp-for="Nombres" class="form-label">Nombres *</label>
+                <input asp-for="Nombres" class="form-control" placeholder="Ej: Roberto" required maxlength="100">
+                <span asp-validation-for="Nombres" class="text-danger small"></span>
+            </div>
+            <div class="col-md-4 mb-3">
+                <label asp-for="Apellidos" class="form-label">Apellidos *</label>
+                <input asp-for="Apellidos" class="form-control" placeholder="Ej: Sánchez" required maxlength="100">
+                <span asp-validation-for="Apellidos" class="text-danger small"></span>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-4 mb-3">
+                <label asp-for="FechaNacimiento" class="form-label">Fecha de Nacimiento *</label>
+                <input asp-for="FechaNacimiento" type="date" class="form-control" required>
+                <span asp-validation-for="FechaNacimiento" class="text-danger small"></span>
+            </div>
+            <div class="col-md-4 mb-3">
+                <label asp-for="Genero" class="form-label">Género</label>
+                <select asp-for="Genero" class="form-select">
+                    <option value="">-- Seleccionar --</option>
+                    <option value="Masculino">Masculino</option>
+                    <option value="Femenino">Femenino</option>
+                    <option value="Otro">Otro</option>
+                </select>
+                <span asp-validation-for="Genero" class="text-danger small"></span>
+            </div>
+            <div class="col-md-4 mb-3">
+                <label asp-for="EstadoCivil" class="form-label">Estado Civil</label>
+                <select asp-for="EstadoCivil" class="form-select">
+                    <option value="">-- Seleccionar --</option>
+                    <option value="Soltero/a">Soltero/a</option>
+                    <option value="Casado/a">Casado/a</option>
+                    <option value="Divorciado/a">Divorciado/a</option>
+                    <option value="Viudo/a">Viudo/a</option>
+                </select>
+                <span asp-validation-for="EstadoCivil" class="text-danger small"></span>
+            </div>
+        </div>
+
+        <h5 class="text-secondary fw-semibold mt-4 mb-3 border-bottom pb-1">
+            <i class="fa-solid fa-address-book me-2"></i>Contacto y Ubicación
+        </h5>
+        <div class="row">
+            <div class="col-md-4 mb-3">
+                <label asp-for="Email" class="form-label">Correo Electrónico</label>
+                <input asp-for="Email" type="email" class="form-control" placeholder="ejemplo@correo.com" maxlength="150">
+                <span asp-validation-for="Email" class="text-danger small"></span>
+            </div>
+            <div class="col-md-4 mb-3">
+                <label asp-for="Telefono" class="form-label">Teléfono Móvil</label>
+                <input asp-for="Telefono" class="form-control" placeholder="Ej: 2664112233" maxlength="20">
+                <span asp-validation-for="Telefono" class="text-danger small"></span>
+            </div>
+            <div class="col-md-4 mb-3">
+                <label asp-for="TelefonoAlternativo" class="form-label">Teléfono Alternativo</label>
+                <input asp-for="TelefonoAlternativo" class="form-control" placeholder="Ej: 2664556677" maxlength="20">
+                <span asp-validation-for="TelefonoAlternativo" class="text-danger small"></span>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label asp-for="Direccion" class="form-label">Dirección de Residencia</label>
+                <input asp-for="Direccion" class="form-control" placeholder="Ej: Av. Serrana 450" maxlength="255">
+                <span asp-validation-for="Direccion" class="text-danger small"></span>
+            </div>
+            <div class="col-md-3 mb-3">
+                <label asp-for="Ciudad" class="form-label">Ciudad</label>
+                <input asp-for="Ciudad" class="form-control" placeholder="La Punta" maxlength="100">
+                <span asp-validation-for="Ciudad" class="text-danger small"></span>
+            </div>
+            <div class="col-md-3 mb-3">
+                <label asp-for="EstadoProvincia" class="form-label">Provincia</label>
+                <input asp-for="EstadoProvincia" class="form-control" placeholder="San Luis" maxlength="100">
+                <span asp-validation-for="EstadoProvincia" class="text-danger small"></span>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-3 mb-3">
+                <label asp-for="CodigoPostal" class="form-label">Código Postal</label>
+                <input asp-for="CodigoPostal" class="form-control" placeholder="5710" maxlength="15">
+                <span asp-validation-for="CodigoPostal" class="text-danger small"></span>
+            </div>
+            <div class="col-md-3 mb-3">
+                <label asp-for="Pais" class="form-label">País</label>
+                <input asp-for="Pais" class="form-control" placeholder="Argentina" maxlength="100">
+                <span asp-validation-for="Pais" class="text-danger small"></span>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label asp-for="TipoPersona" class="form-label">Función / Rol en Iglesia *</label>
+                <select asp-for="TipoPersona" class="form-select" required>
+                    <option value="Miembro">Miembro</option>
+                    <option value="Pastor">Pastor</option>
+                    <option value="Diácono">Diácono</option>
+                    <option value="Músico">Músico</option>
+                    <option value="Multimedia">Multimedia</option>
+                </select>
+                <span asp-validation-for="TipoPersona" class="text-danger small"></span>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-md-6 mb-3">
+                <label asp-for="UsuarioId" class="form-label">ID Usuario Vinculado (Opcional)</label>
+                <input asp-for="UsuarioId" type="number" class="form-control" placeholder="Asociar ID de cuenta">
+                <span asp-validation-for="UsuarioId" class="text-danger small"></span>
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-lg w-100 mt-4 text-uppercase fw-bold">
+            <i class="fa-solid fa-floppy-disk me-2"></i>Guardar Miembro
+        </button>
+    </form>
+</div>
+
+@* Nota: Recordá que los scripts de validación y de SweetAlert2 es mejor ponerlos *@
+@* en la vista principal que consume esta vista parcial (por ejemplo, en Index.cshtml) *@

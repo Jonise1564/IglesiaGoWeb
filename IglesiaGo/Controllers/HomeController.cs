@@ -15,47 +15,59 @@ public class HomeController : Controller
         _context = context;
     }
 
-    // PÁGINA DE INICIO: Carga las noticias ordenadas por fecha
+    // PÁGINA DE INICIO: Lista las noticias (mapeadas a la tabla 'noticias')
     public IActionResult Index()
     {
-        var noticias = _context.Noticias
-            .OrderByDescending(n => n.Fecha)
-            .ToList();
+        try
+        {
+            var noticias = _context.Noticias
+                .OrderByDescending(n => n.Fecha)
+                .ToList();
 
-        return View(noticias);
+            return View(noticias);
+        }
+        catch (Exception)
+        {
+            // Retorna una lista vacía para evitar que la vista explote si hay error de mapeo
+            return View(new List<Noticia>());
+        }
     }
 
-    // QUIÉNES SOMOS: Vista estática institucional
     public IActionResult QuienesSomos()
     {
         return View();
     }
 
-    // ENSEÑANZAS BÍBLICAS: Lista de enseñanzas desde la DB
+    // ENSEÑANZAS: Lista las enseñanzas (mapeadas a la tabla 'enseñanzas')
     public IActionResult Ensenanzas()
     {
-        var ensenanzas = _context.Enseñanzas
-            .OrderByDescending(e => e.FechaPublicacion)
-            .ToList();
+        try
+        {
+            var ensenanzas = _context.Enseñanzas
+                .OrderByDescending(e => e.FechaPublicacion)
+                .ToList();
 
-        return View(ensenanzas);
+            return View(ensenanzas);
+        }
+        catch (Exception)
+        {
+            return View(new List<Enseñanza>());
+        }
     }
 
-    // CONTACTO (GET): Muestra el formulario vacío
     public IActionResult Contacto()
     {
         return View();
     }
 
-    // CONTACTO (POST): Procesa y guarda la nueva Consulta
     [HttpPost]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> EnviarMensaje(Consulta consulta)
     {
         if (ModelState.IsValid)
         {
             try 
             {
-                // Asignamos valores por defecto antes de guardar
                 consulta.FechaCreacion = DateTime.Now; 
                 consulta.Atendido = false;
 
@@ -65,35 +77,32 @@ public class HomeController : Controller
                 TempData["MensajeEnviado"] = "Gracias por escribirnos. Nos pondremos en contacto pronto.";
                 return RedirectToAction("Contacto");
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                ModelState.AddModelError("", "Error al intentar guardar en la base de datos.");
+                ModelState.AddModelError("", "No se pudo guardar la consulta. Verifique la conexión con MySQL.");
             }
         }
 
-        // Si el modelo no es válido, regresamos a la vista con los errores
         return View("Contacto", consulta);
     }
 
-    // LOGIN (GET): Muestra el formulario de acceso
     public IActionResult Login()
     {
         return View();
     }
 
-    // LOGIN (POST): Valida las credenciales del usuario
     [HttpPost]
+    [ValidateAntiForgeryToken]
     public IActionResult Login(LoginViewModel model)
     {
         if (ModelState.IsValid)
         {
-            // Búsqueda simple (Para producción considera usar Hash real de contraseñas)
+            // Buscamos el usuario en la tabla 'Usuarios'
             var usuario = _context.Usuarios
                 .FirstOrDefault(u => u.Email == model.Email && u.PasswordHash == model.Password);
 
             if (usuario != null)
             {
-                // Aquí podrías implementar el manejo de Cookies o JWT
                 return RedirectToAction("Index");
             }
 
@@ -102,7 +111,6 @@ public class HomeController : Controller
         return View(model);
     }
 
-    // MANEJO DE ERRORES
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public IActionResult Error()
     {

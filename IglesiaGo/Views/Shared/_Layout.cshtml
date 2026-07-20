@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+﻿@* <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="utf-8" />
@@ -8,6 +8,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
+    
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/IglesiaGo.styles.css" asp-append-version="true" />
@@ -15,21 +17,12 @@
     <style>
         body {
             font-family: 'Montserrat', sans-serif;
-            /* 1. Espacio para que el contenido no empiece debajo del menú fijo */
             padding-top: 80px; 
         }
 
-        /* 2. El Menú como bloque sólido "Sticky" */
-        @* .navbar-su-presencia {
-            background-color: #ededed !important; /* El gris claro de la imagen */
-            padding-top: 15px;
-            padding-bottom: 15px;
-            z-index: 1030; /* Asegura que esté por encima de todo */
-        } *@
-
+        /* Menú superior sólido */
         .navbar-su-presencia {
             background-color: #ededed !important;
-            /* Reducimos el padding vertical de 15px a 5px o 8px */
             padding-top: 8px;
             padding-bottom: 8px;
             z-index: 1030;
@@ -43,37 +36,28 @@
             font-weight: 700;
             letter-spacing: 1px;
         }
-       .brand-maintext {
-            font-size: 24px; /* Bajamos de 28px a 24px */
+        .brand-maintext {
+            font-size: 24px;
             font-weight: 400;
             color: #000;
             letter-spacing: -1px;
         }
 
-        /* Links de navegación */
-        @* .nav-link {
+        /* Enlaces de navegación */
+        .nav-link {
             color: #666 !important;
-            font-size: 11px !important;
+            font-size: 10px !important;
             font-weight: 700 !important;
-            letter-spacing: 0.5px;
-            padding: 0 15px !important;
-        } *@
-
-
-    nav-link {
-    color: #666 !important;
-    font-size: 10px !important; /* Un punto más chica */
-    font-weight: 700 !important;
-    padding: 0 10px !important; /* Menos espacio lateral entre links */
-}
+            padding: 0 10px !important;
+        }
 
         .nav-link:hover {
             color: #000 !important;
         }
 
-        /* Divisores verticales */
-       .nav-divider {
-            height: 20px; /* Divisor más corto */
+        /* Divisores verticales del menú */
+        .nav-divider {
+            height: 20px;
             width: 1px;
             background-color: #ccc;
             margin: 0 3px;
@@ -86,10 +70,18 @@
             border-top: 1px solid #dee2e6;
         }
 
-        /* Ajuste para móviles */
+        /* Evitar saltos visuales ocultando el bloque dinámico hasta evaluar el token */
+        #menuDinamico {
+            display: inline-flex;
+            align-items: center;
+        }
+
+        /* Adaptación a dispositivos móviles */
         @@media (max-width: 991px) {
             .nav-divider { display: none; }
             body { padding-top: 40px; }
+            .nav-link { padding: 8px 15px !important; font-size: 12px !important; }
+            #menuDinamico { display: block; width: 100%; }
         }
     </style>
 </head>
@@ -107,36 +99,24 @@
                 </button>
 
                 <div class="collapse navbar-collapse" id="navbarMain">
-                    <ul class="navbar-nav ms-auto align-items-center text-uppercase">
-                        <li class="nav-item">
-                            <a class="nav-link" asp-controller="Home" asp-action="Index">INICIO</a>
-                        </li>
-                        <li class="nav-divider"></li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-controller="Home" asp-action="QuienesSomos">QUIÉNES SOMOS</a>
-                        </li>
-                        <li class="nav-divider"></li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-controller="Home" asp-action="Ensenanzas">ENSEÑANZAS</a>
-                        </li>
-                        <li class="nav-divider"></li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-controller="Home" asp-action="Contacto">CONTACTO</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-controller="Home" asp-action="Login">INGRESAR</a>
-                        </li>
-                        @* <li class="nav-item ms-3 d-none d-lg-block">
-                            <a href="#" class="text-secondary"><i class="bi bi-search"></i></a>
-                        </li> *@
-                    </ul>
+                    <ul class="navbar-nav ms-auto align-items-center text-uppercase" id="menuDinamico">
+                        </ul>
                 </div>
             </div>
         </nav>
     </header>
 
     <main role="main" class="pb-3">
-        @RenderBody()
+        @if (ViewData["Title"]?.ToString() == "Panel de Miembros")
+        {
+            @RenderBody()
+        }
+        else
+        {
+            <div class="container">
+                @RenderBody()
+            </div>
+        }
     </main>
 
     <footer class="text-center text-muted">
@@ -152,6 +132,285 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const menuContainer = document.getElementById("menuDinamico");
+            const token = localStorage.getItem("token"); // Clave donde tu Login guarda el string del JWT
+
+            if (token) {
+                // ==========================================
+                // VISTA LOGEADO (Dashboard Administrativo)
+                // ==========================================
+                menuContainer.innerHTML = `
+                    <li class="nav-item">
+                        <a class="nav-link text-primary fw-bold" href="/Admin/Dashboard">
+                            <i class="fa-solid fa-chart-line me-1"></i> PANEL MIEMBROS
+                        </a>
+                    </li>
+                    <li class="nav-divider"></li>
+                    <li class="nav-item">
+                        <a class="nav-link text-danger fw-bold" href="#" id="btnCerrarSesion">
+                            <i class="fa-solid fa-right-from-bracket me-1"></i> SALIR
+                        </a>
+                    </li>
+                `;
+
+                // Configura la acción de deslogeo borrando el almacenamiento local
+                document.getElementById("btnCerrarSesion").addEventListener("click", function(e) {
+                    e.preventDefault();
+                    localStorage.removeItem("token");
+                    window.location.href = "/Home/Index";
+                });
+
+            } else {
+                // ==========================================
+                // VISTA PÚBLICA (Invitados o Web institucional)
+                // ==========================================
+                menuContainer.innerHTML = `
+                    <li class="nav-item">
+                        <a class="nav-link" href="/Home/Index">INICIO</a>
+                    </li>
+                    <li class="nav-divider"></li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/Home/QuienesSomos">QUIÉNES SOMOS</a>
+                    </li>
+                    <li class="nav-divider"></li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/Home/Ensenanzas">ENSEÑANZAS</a>
+                    </li>
+                    <li class="nav-divider"></li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/Home/Contacto">CONTACTO</a>
+                    </li>
+                    <li class="nav-divider"></li>
+                    <li class="nav-item">
+                        <a class="nav-link text-primary fw-bold" href="/Home/Login">INGRESAR</a>
+                    </li>
+                `;
+            }
+        });
+    </script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html> *@
+
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - IglesiaGo</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
+    
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/IglesiaGo.styles.css" asp-append-version="true" />
+
+    <style>
+        body {
+            font-family: 'Montserrat', sans-serif;
+            padding-top: 80px; 
+        }
+
+        /* Menú superior sólido */
+        .navbar-su-presencia {
+            background-color: #ededed !important;
+            padding-top: 8px;
+            padding-bottom: 8px;
+            z-index: 1030;
+        }
+
+        /* Estilo del Logo */
+        .brand-subtext {
+            font-size: 10px;
+            color: #000;
+            margin-bottom: -5px;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+        .brand-maintext {
+            font-size: 24px;
+            font-weight: 400;
+            color: #000;
+            letter-spacing: -1px;
+        }
+
+        /* Enlaces de navegación */
+        .nav-link {
+            color: #666 !important;
+            font-size: 10px !important;
+            font-weight: 700 !important;
+            padding: 0 10px !important;
+        }
+
+        .nav-link:hover {
+            color: #000 !important;
+        }
+
+        /* Divisores verticales del menú */
+        .nav-divider {
+            height: 20px;
+            width: 1px;
+            background-color: #ccc;
+            margin: 0 3px;
+        }
+
+        footer {
+            background-color: #f8f9fa;
+            padding: 3rem 0;
+            margin-top: 5rem;
+            border-top: 1px solid #dee2e6;
+        }
+
+        /* Evitar saltos visuales ocultando el bloque dinámico hasta evaluar el token */
+        #menuDinamico {
+            display: inline-flex;
+            align-items: center;
+        }
+
+        /* Adaptación a dispositivos móviles */
+        @@media (max-width: 991px) {
+            .nav-divider { display: none; }
+            body { padding-top: 70px; }
+            .nav-link { padding: 8px 15px !important; font-size: 12px !important; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-light navbar-su-presencia shadow-sm fixed-top">
+            <div class="container-fluid px-4">
+                <a class="navbar-brand d-flex flex-column text-decoration-none" asp-controller="Home" asp-action="Index">
+                    <span class="brand-subtext">EL LUGAR DE</span>
+                    <span class="brand-maintext">IglesiaGo</span>
+                </a>
+
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="navbarMain">
+                    <ul class="navbar-nav ms-auto align-items-center text-uppercase" id="menuDinamico">
+                        <!-- Generado por JavaScript -->
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main role="main" class="pb-3">
+        @if (ViewData["Title"]?.ToString() == "Panel de Miembros")
+        {
+            @RenderBody()
+        }
+        else
+        {
+            <div class="container">
+                @RenderBody()
+            </div>
+        }
+    </main>
+
+    <footer class="text-center text-muted">
+        <div class="container">
+            <p class="mb-1 fw-bold">&copy; @DateTime.Now.Year - IGLESIAGO</p>
+            <p class="small mb-2">San Luis, Argentina</p>
+            <div class="small">
+                <a asp-controller="Home" asp-action="Privacy" class="text-decoration-none text-muted">Privacidad</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const menuContainer = document.getElementById("menuDinamico");
+            const token = localStorage.getItem("token");
+
+            if (token) {
+                // ==========================================
+                // VISTA ADMINISTRADOR (Menús completos + Gestión)
+                // ==========================================
+                menuContainer.innerHTML = `
+                    <li class="nav-item">
+                        <a class="nav-link" href="/Home/Index">INICIO</a>
+                    </li>
+                    <li class="nav-divider"></li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/Home/QuienesSomos">QUIÉNES SOMOS</a>
+                    </li>
+                    <li class="nav-divider"></li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/Home/Ensenanzas">ENSEÑANZAS</a>
+                    </li>
+                    <li class="nav-divider"></li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/Home/Contacto">CONTACTO</a>
+                    </li>
+                    <li class="nav-divider"></li>
+                    <li class="nav-item">
+                        <a class="nav-link text-primary fw-bold" href="/Admin/Dashboard">
+                            <i class="fa-solid fa-chart-line me-1"></i> DASHBOARD
+                        </a>
+                    </li>
+                    <li class="nav-divider"></li>
+                    <li class="nav-item">
+                        <a class="nav-link text-danger fw-bold" href="#" id="btnCerrarSesion">
+                            <i class="fa-solid fa-right-from-bracket me-1"></i> SALIR
+                        </a>
+                    </li>
+                `;
+
+                // Configura la acción de deslogeo
+                document.getElementById("btnCerrarSesion").addEventListener("click", function(e) {
+                    e.preventDefault();
+                    localStorage.removeItem("token");
+                    window.location.href = "/Home/Index";
+                });
+
+            } else {
+                // ==========================================
+                // VISTA PÚBLICA (Invitados)
+                // ==========================================
+                menuContainer.innerHTML = `
+                    <li class="nav-item">
+                        <a class="nav-link" href="/Home/Index">INICIO</a>
+                    </li>
+                    <li class="nav-divider"></li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/Home/QuienesSomos">QUIÉNES SOMOS</a>
+                    </li>
+                    <li class="nav-divider"></li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/Home/Ensenanzas">ENSEÑANZAS</a>
+                    </li>
+                    <li class="nav-divider"></li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/Home/Contacto">CONTACTO</a>
+                    </li>
+                    <li class="nav-divider"></li>
+                    <li class="nav-item">
+                        <a class="nav-link text-primary fw-bold" href="/Home/Login">INGRESAR</a>
+                    </li>
+                `;
+            }
+        });
+    </script>
+
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
+
+
+
+

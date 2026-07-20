@@ -1,3 +1,4 @@
+
 @model IglesiaGo.Models.LoginViewModel
 @{
     ViewData["Title"] = "Iniciar Sesión";
@@ -9,29 +10,69 @@
             <div class="card shadow-sm border-0 p-4">
                 <h2 class="text-center fw-bold mb-4">INGRESAR</h2>
                 
-                <form asp-action="Login" method="post">
+                <form id="formLogin">
+                    <div id="errorAlert" class="alert alert-danger d-none small mb-3"></div>
+
                     <div class="mb-3">
                         <label asp-for="Email" class="form-label small fw-bold">CORREO ELECTRÓNICO</label>
-                        <input asp-for="Email" class="form-control form-control-sm" placeholder="ejemplo@mail.com" />
+                        <input asp-for="Email" id="txtEmail" type="email" class="form-control form-control-sm" placeholder="ejemplo@mail.com" required />
                         <span asp-validation-for="Email" class="text-danger small"></span>
                     </div>
 
                     <div class="mb-3">
                         <label asp-for="Password" class="form-label small fw-bold">CONTRASEÑA</label>
-                        <input asp-for="Password" class="form-control form-control-sm" />
+                        <input asp-for="Password" id="txtPassword" type="password" class="form-control form-control-sm" required />
                         <span asp-validation-for="Password" class="text-danger small"></span>
                     </div>
 
                     <button type="submit" class="btn btn-dark w-100 fw-bold mt-3">ENTRAR</button>
-                    
-                    @if (!ViewData.ModelState.IsValid && ViewData.ModelState["Error"] != null)
-                    {
-                        <div class="alert alert-danger mt-3 small">
-                            @ViewData.ModelState["Error"].Errors[0].ErrorMessage
-                        </div>
-                    }
                 </form>
             </div>
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        document.getElementById("formLogin").addEventListener("submit", function (e) {
+            e.preventDefault(); // Evita que la página se recargue automáticamente
+
+            const email = document.getElementById("txtEmail").value;
+            const password = document.getElementById("txtPassword").value;
+            const errorAlert = document.getElementById("errorAlert");
+
+            errorAlert.classList.add("d-none"); // Ocultar errores previos
+
+            // Enviamos los datos en formato JSON directo al AuthController
+            fetch('/Auth/Login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    Email: email,
+                    Password: password
+                })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    // Si el backend tira 401 Unauthorized o 400 BadRequest
+                    return response.json().then(err => { throw new Error(err.message || "Credenciales inválidas"); });
+                }
+                return response.json();
+            })
+            .then(data => {
+                // Si el controlador nos devolvió el token con éxito
+                if (data.token) {
+                    localStorage.setItem("token", data.token); // Guardamos en el almacenamiento local
+                    window.location.href = "/Admin/Dashboard"; // Redirección limpia al panel de miembros
+                }
+            })
+            .catch(error => {
+                // Mostramos el mensaje de error en el contenedor de Bootstrap
+                errorAlert.textContent = error.message;
+                errorAlert.classList.remove("d-none");
+            });
+        });
+    </script>
+}

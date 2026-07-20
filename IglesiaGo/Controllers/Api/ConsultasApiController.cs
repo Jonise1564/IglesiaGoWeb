@@ -4,7 +4,7 @@ using IglesiaGo.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
 
-namespace IglesiaGo.Controllers.Api 
+namespace IglesiaGo.Controllers.Api
 {
     [ApiController]
     [Route("api/[controller]")]
@@ -53,15 +53,16 @@ namespace IglesiaGo.Controllers.Api
         }
 
         // POST: api/ConsultasApi
-        // Para que la App envíe una consulta nueva (Cabecera inicial)
+        // Para que la App envíe una consulta nueva
+       [AllowAnonymous] // Permite que esta acción sea accesible sin autenticación
         [HttpPost]
         public async Task<ActionResult<Consulta>> PostConsulta(Consulta consulta)
         {
-            try 
+            try
             {
                 consulta.FechaCreacion = DateTime.Now;
-                consulta.Atendido = false; 
-                
+                consulta.Atendido = false;
+
                 _context.Consultas.Add(consulta);
                 await _context.SaveChangesAsync();
 
@@ -74,27 +75,41 @@ namespace IglesiaGo.Controllers.Api
         }
 
         // POST: api/ConsultasApi/Responder
-        // Permite al usuario enviar una respuesta o mensaje adicional al hilo desde la App
+        
         [HttpPost("Responder")]
-        public async Task<IActionResult> PostMensajeHilo(MensajeConsulta nuevoMensaje)
+        public async Task<IActionResult> PostMensajeHilo([FromBody] MensajeConsulta nuevoMensaje)
         {
+            // 1. Forzamos la limpieza de validaciones automáticas
+            ModelState.Clear();
+
+            // 2. Verificación de seguridad
+            if (nuevoMensaje == null)
+            {
+                return BadRequest(new { mensaje = "El servidor recibió un objeto nulo." });
+            }
+
             try
             {
+                // 3. Aseguramos datos mínimos
                 nuevoMensaje.FechaEnvio = DateTime.Now;
-                nuevoMensaje.TipoRemitente = "Usuario"; // En la App siempre es el usuario
+                nuevoMensaje.Consulta = null; // Evita que intente validar la relación
 
                 _context.MensajesConsulta.Add(nuevoMensaje);
 
-                // Si el usuario responde, marcamos como NO atendido para que el Admin lo vea
-                var consulta = await _context.Consultas.FindAsync(nuevoMensaje.ConsultaId);
-                if (consulta != null) consulta.Atendido = false;
+                // 4. Actualizar estado de la consulta padre
+                var consultaOriginal = await _context.Consultas.FindAsync(nuevoMensaje.ConsultaId);
+                if (consultaOriginal != null)
+                {
+                    consultaOriginal.Atendido = true;
+                }
 
                 await _context.SaveChangesAsync();
-                return Ok(new { mensaje = "Mensaje agregado al hilo" });
+                return Ok(new { mensaje = "Respuesta guardada con éxito" });
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { mensaje = "Error al agregar mensaje", error = ex.Message });
+                // Esto te dirá si el problema es MySQL (ej: falta una columna)
+                return StatusCode(500, new { mensaje = "Error interno", detalle = ex.Message });
             }
         }
 

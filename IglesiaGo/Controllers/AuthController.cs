@@ -32,7 +32,7 @@ namespace IglesiaGo.Controllers
             if (ModelState.IsValid)
             {
                 // 1. Validar el usuario contra la DB
-                                var usuario = _context.Usuarios
+                var usuario = _context.Usuarios
                     .FirstOrDefault(u => u.Email == model.Email && u.PasswordHash == model.Password);
 
                 if (usuario != null)
@@ -59,15 +59,16 @@ namespace IglesiaGo.Controllers
                 new Claim(JwtRegisteredClaimNames.Sub, usuario.Email),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new Claim("UsuarioId", usuario.Id.ToString()),
-                // Puedes agregar roles aquí si los tienes
                 new Claim(ClaimTypes.Role, "Admin") 
             };
 
+            // Se cambia DateTime.Now por DateTime.UtcNow (es una buena práctica global para JWT)
+            // Cambiado a .AddMinutes(20) para mayor seguridad en el Panel de Administración
             var token = new JwtSecurityToken(
                 issuer: _config["Jwt:Issuer"],
                 audience: _config["Jwt:Audience"],
                 claims: claims,
-                expires: DateTime.Now.AddHours(1), // El token vence en 10 minutos
+                expires: DateTime.UtcNow.AddMinutes(20), 
                 signingCredentials: creds
             );
 

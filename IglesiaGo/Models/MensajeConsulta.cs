@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation; 
 
 namespace IglesiaGo.Models
 {
@@ -14,7 +15,7 @@ namespace IglesiaGo.Models
 
         [Required]
         [StringLength(20)]
-        public string TipoRemitente { get; set; } // "Admin" o "Usuario"
+        public string TipoRemitente { get; set; } 
 
         [Required]
         public string CuerpoMensaje { get; set; }
@@ -22,6 +23,7 @@ namespace IglesiaGo.Models
         public DateTime? FechaEnvio { get; set; }
 
         [ForeignKey("ConsultaId")]
+        [ValidateNever] 
         public virtual Consulta? Consulta { get; set; }
     }
 }

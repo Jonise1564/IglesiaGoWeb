@@ -1,0 +1,415 @@
+@model IEnumerable<IglesiaGo.Models.Persona>
+
+@{
+    ViewData["Title"] = "Dashboard IglesiaGo";
+}
+
+<div class="container-fluid my-4">
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm bg-primary text-white p-3">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-uppercase small mb-1 opacity-75">Total Miembros</h6>
+                        <h3 class="fw-bold m-0">@Model.Count()</h3>
+                    </div>
+                    <i class="fa-solid fa-users fa-2x opacity-50"></i>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm bg-success text-white p-3">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-uppercase small mb-1 opacity-75">Músicos</h6>
+                        <h3 class="fw-bold m-0">@Model.Count(p => p.TipoPersona == "Músico")</h3>
+                    </div>
+                    <i class="fa-solid fa-guitar fa-2x opacity-50"></i>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm bg-info text-white p-3">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-uppercase small mb-1 opacity-75">Multimedia</h6>
+                        <h3 class="fw-bold m-0">@Model.Count(p => p.TipoPersona == "Multimedia")</h3>
+                    </div>
+                    <i class="fa-solid fa-camera fa-2x opacity-50"></i>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm bg-warning text-dark p-3">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-uppercase small mb-1 opacity-75">Liderazgo</h6>
+                        <h3 class="fw-bold m-0">@Model.Count(p => p.TipoPersona == "Pastor" || p.TipoPersona == "Diácono")</h3>
+                    </div>
+                    <i class="fa-solid fa-user-tie fa-2x opacity-25"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-12 mb-4">
+            <div class="card border-0 shadow-sm p-4 h-100">
+                
+                <ul class="nav nav-tabs border-bottom-0 mb-3" id="dashboardTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active fw-bold text-uppercase px-3 py-2 small" id="miembros-tab" data-bs-toggle="tab" data-bs-target="#miembros" type="button" role="tab" aria-controls="miembros" aria-selected="true">
+                            <i class="fa-solid fa-user-group me-2"></i>Miembros
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link fw-bold text-uppercase px-3 py-2 small" id="ensenanzas-tab" data-bs-toggle="tab" data-bs-target="#ensenanzas" type="button" role="tab" aria-controls="ensenanzas" aria-selected="false">
+                            <i class="fa-solid fa-book-open me-2"></i>Enseñanzas
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link fw-bold text-uppercase px-3 py-2 small" id="mensajes-tab" data-bs-toggle="tab" data-bs-target="#mensajes" type="button" role="tab" aria-controls="mensajes" aria-selected="false">
+                            <i class="fa-solid fa-envelope me-2"></i>Mensajes
+                        </button>
+                    </li>
+                </ul>
+
+                <div class="tab-content" id="dashboardTabsContent">
+                    
+                    <div class="tab-pane fade show active" id="miembros" role="tabpanel" aria-labelledby="miembros-tab">
+                        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-3 gap-2 mt-2">
+                            <div class="d-flex align-items-center gap-3">
+                                <h5 class="fw-bold text-secondary m-0">Listado del Personal</h5>
+                                <button type="button" class="btn btn-sm btn-dark fw-bold" onclick="abrirModalNuevoMiembro()">
+                                    <i class="fa-solid fa-plus me-1"></i> NUEVO MIEMBRO
+                                </button>
+                            </div>
+                            <div class="input-group input-group-sm w-auto">
+                                <span class="input-group-text bg-white border-end-0 text-muted"><i class="fa-solid fa-magnifying-glass"></i></span>
+                                <input type="text" id="tablaBuscador" class="form-control border-start-0" placeholder="Buscar miembro..." onkeyup="buscarMiembro()">
+                            </div>
+                        </div>
+
+                        <div class="table-responsive" style="max-height: 520px; overflow-y: auto;">
+                            <table class="table table-hover align-middle" id="tablaMiembros">
+                                <thead class="table-light sticky-top">
+                                    <tr>
+                                        <th>Miembro</th>
+                                        <th>DNI</th>
+                                        <th>Contacto</th>
+                                        <th>Función</th>
+                                        <th class="text-end">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var persona in Model)
+                                    {
+                                        <tr data-rol="@persona.TipoPersona">
+                                            <td>
+                                                <div class="fw-bold text-dark">@persona.Apellidos, @persona.Nombres</div>
+                                                <small class="text-muted">@persona.Ciudad</small>
+                                            </td>
+                                            <td>@persona.DocumentoIdentidad</td>
+                                            <td>
+                                                <div>@persona.Telefono</div>
+                                                <small class="text-muted text-truncate d-inline-block" style="max-width: 150px;">@persona.Email</small>
+                                            </td>
+                                            <td>
+                                                <span class="badge @(persona.TipoPersona == "Pastor" ? "bg-danger" : persona.TipoPersona == "Músico" ? "bg-purple text-white" : persona.TipoPersona == "Multimedia" ? "bg-info text-dark" : "bg-secondary")">
+                                                    @persona.TipoPersona
+                                                </span>
+                                            </td>
+                                            <td class="text-end">
+                                                <button type="button" 
+                                                        onclick='abrirModalEditarMiembro(@Html.Raw(System.Text.Json.JsonSerializer.Serialize(persona)))' 
+                                                        class="btn btn-sm btn-outline-primary border-0 me-1" 
+                                                        title="Editar">
+                                                    <i class="fa-solid fa-pen"></i>
+                                                </button>
+                                                <button type="button" onclick="confirmarEliminar(@persona.Id, '@persona.Nombres')" class="btn btn-sm btn-outline-danger border-0" title="Eliminar">
+                                                    <i class="fa-solid fa-trash"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    }
+                                    @if (!Model.Any())
+                                    {
+                                        <tr>
+                                            <td colspan="5" class="text-center py-4 text-muted">No hay miembros registrados todavía.</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="tab-pane fade" id="ensenanzas" role="tabpanel" aria-labelledby="ensenanzas-tab">
+                        <div class="d-flex justify-content-between align-items-center mb-3 mt-2">
+                            <h5 class="fw-bold text-secondary m-0">Gestión de Enseñanzas / Bosquejos</h5>
+                            <button type="button" class="btn btn-sm btn-dark fw-bold" onclick="crearNuevaEnsenanza()">
+                                <i class="fa-solid fa-plus me-1"></i> NUEVA ENSEÑANZA
+                            </button>
+                        </div>
+                        <div class="table-responsive" style="max-height: 520px; overflow-y: auto;">
+                            <table class="table table-hover align-middle">
+                                <thead class="table-light sticky-top">
+                                    <tr>
+                                        <th>Título</th>
+                                        <th>Fecha</th>
+                                        <th>Pasaje Clave</th>
+                                        <th class="text-end">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tablaEnsenanzas">
+                                    <tr>
+                                        <td colspan="4" class="text-center py-4 text-muted">
+                                            <div class="spinner-border spinner-border-sm text-secondary me-2" role="status"></div>Cargando enseñanzas...
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="tab-pane fade" id="mensajes" role="tabpanel" aria-labelledby="mensajes-tab">
+                        <div class="d-flex justify-content-between align-items-center mb-3 mt-2">
+                            <h5 class="fw-bold text-secondary m-0">Mensajes de Contacto Recibidos</h5>
+                        </div>
+                        <div class="table-responsive" style="max-height: 520px; overflow-y: auto;">
+                            <table class="table table-hover align-middle">
+                                <thead class="table-light sticky-top">
+                                    <tr>
+                                        <th>Remitente</th>
+                                        <th>Asunto</th>
+                                        <th>Fecha</th>
+                                        <th>Estado</th>
+                                        <th class="text-end">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tablaMensajes">
+                                    <tr>
+                                        <td colspan="5" class="text-center py-4 text-muted">
+                                            <div class="spinner-border spinner-border-sm text-secondary me-2" role="status"></div>Cargando buzón...
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="miembroModal" tabindex="-1" aria-labelledby="miembroModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-dark text-white">
+                <h5 class="modal-title fw-bold" id="miembroModalLabel">Gestión de Miembro</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body p-4 bg-light">
+                @await Html.PartialAsync("_PersonasSection", new IglesiaGo.Models.Persona { FechaNacimiento = DateTime.Today, Pais = "Argentina" })
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // SEGURIDAD FRONTEND: Control de Token
+        (function () {
+            const token = localStorage.getItem("token");
+            if (!token) {
+                window.location.href = "/Home/Login";
+            }
+        })();
+    </script>
+
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="~/js/admin-personas.js" asp-append-version="true"></script>
+
+    <style>
+        .bg-purple { background-color: #6f42c1; }
+        .nav-tabs .nav-link {
+            color: #666;
+            border: none;
+            border-bottom: 2px solid transparent;
+        }
+        .nav-tabs .nav-link.active {
+            color: #000 !important;
+            border-bottom: 2px solid #000 !important;
+            background-color: transparent !important;
+        }
+    </style>
+
+    <script>
+        // Declaramos la instancia del modal globalmente
+        let bootstrapMiembroModal;
+
+        document.addEventListener("DOMContentLoaded", function () {
+            // Inicializar el modal de Bootstrap
+            bootstrapMiembroModal = new bootstrap.Modal(document.getElementById('miembroModal'));
+
+            // Sincronizar alertas con el TempData desde controladores tradicionales MVC
+            const alertMsg = "@Html.Raw(TempData["ResultadoPersona"] ?? "")";
+            if (alertMsg.length > 0) {
+                Swal.fire({
+                    title: '¡Operación Exitosa!',
+                    text: alertMsg,
+                    icon: 'success',
+                    confirmButtonText: 'Perfecto',
+                    confirmButtonColor: '#0d6efd'
+                });
+                window.history.replaceState({}, document.title, window.location.pathname);
+            }
+
+            // Cargar datos asíncronos para Enseñanzas y Mensajes
+            cargarEnsenanzas();
+            cargarMensajes();
+        });
+
+        // Función para abrir el modal vacío para un Nuevo Miembro
+        function abrirModalNuevoMiembro() {
+            document.getElementById("miembroModalLabel").textContent = "REGISTRAR NUEVO MIEMBRO";
+            
+            // Si tu script admin-personas.js tiene una función para limpiar el formulario, la ejecutamos aquí
+            if (typeof limpiarFormulario === "function") {
+                limpiarFormulario();
+            } else {
+                const form = document.querySelector("#miembroModal form");
+                if (form) form.reset();
+                const idInput = document.querySelector("#miembroModal input[name='Id']");
+                if (idInput) idInput.value = "0";
+            }
+            
+            bootstrapMiembroModal.show();
+        }
+
+        // Función para abrir el modal con los datos cargados para Editar
+        function abrirModalEditarMiembro(personaObj) {
+            document.getElementById("miembroModalLabel").textContent = "MODIFICAR MIEMBRO";
+            
+            // Cargar datos en el formulario usando tu función original de admin-personas.js
+            cargarMiembroEnFormulario(personaObj);
+            
+            bootstrapMiembroModal.show();
+        }
+
+        // -------------------------------------------------------------
+        // SECCIÓN ENSEÑANZAS (Carga asíncrona mediante Fetch con Token)
+        // -------------------------------------------------------------
+        function cargarEnsenanzas() {
+            const token = localStorage.getItem("token");
+            fetch('/Consultas/GetEnsenanzas', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            })
+            .then(res => res.ok ? res.json() : [])
+            .then(data => {
+                const tbody = document.getElementById("tablaEnsenanzas");
+                tbody.innerHTML = "";
+                
+                if (data.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="4" class="text-center py-4 text-muted">No hay enseñanzas registradas todavía.</td></tr>`;
+                    return;
+                }
+
+                data.forEach(e => {
+                    const fecha = new Date(e.fechaPublicacion).toLocaleDateString();
+                    tbody.innerHTML += `
+                        <tr>
+                            <td>
+                                <div class="fw-bold">${e.titulo}</div>
+                                <small class="text-muted">${e.autor || 'Pastor Principal'}</small>
+                            </td>
+                            <td>${fecha}</td>
+                            <td><span class="badge bg-secondary">${e.pasajeClave || 'General'}</span></td>
+                            <td class="text-end">
+                                <button class="btn btn-sm btn-outline-primary border-0 me-1" onclick="editarEnsenanza(${e.id})"><i class="fa-solid fa-pen"></i></button>
+                                <button class="btn btn-sm btn-outline-danger border-0" onclick="eliminarEnsenanza(${e.id})"><i class="fa-solid fa-trash"></i></button>
+                            </td>
+                        </tr>
+                    `;
+                });
+            })
+            .catch(() => {
+                document.getElementById("tablaEnsenanzas").innerHTML = `<tr><td colspan="4" class="text-center text-danger py-3">Error al conectar con la API de Enseñanzas.</td></tr>`;
+            });
+        }
+
+        // -------------------------------------------------------------
+        // SECCIÓN MENSAJES (Consultas de Contacto)
+        // -------------------------------------------------------------
+        function cargarMensajes() {
+            const token = localStorage.getItem("token");
+            fetch('/Consultas/GetMensajes', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            })
+            .then(res => res.ok ? res.json() : [])
+            .then(data => {
+                const tbody = document.getElementById("tablaMensajes");
+                tbody.innerHTML = "";
+
+                if (data.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="5" class="text-center py-4 text-muted">Buzón de entrada vacío.</td></tr>`;
+                    return;
+                }
+
+                data.forEach(m => {
+                    const fecha = new Date(m.fechaEnvio).toLocaleDateString();
+                    tbody.innerHTML += `
+                        <tr>
+                            <td>
+                                <div class="fw-bold">${m.nombreRemitente}</div>
+                                <small class="text-muted">${m.correo}</small>
+                            </td>
+                            <td>${m.asunto}</td>
+                            <td>${fecha}</td>
+                            <td><span class="badge ${m.leido ? 'bg-success' : 'bg-warning text-dark'}">${m.leido ? 'Leído' : 'Pendiente'}</span></td>
+                            <td class="text-end">
+                                <button class="btn btn-sm btn-outline-primary border-0 me-1" onclick="verMensaje(${m.id})"><i class="fa-solid fa-envelope-open"></i></button>
+                                <button class="btn btn-sm btn-outline-danger border-0" onclick="eliminarMensaje(${m.id})"><i class="fa-solid fa-trash"></i></button>
+                            </td>
+                        </tr>
+                    `;
+                });
+            })
+            .catch(() => {
+                document.getElementById("tablaMensajes").innerHTML = `<tr><td colspan="5" class="text-center text-danger py-3">Error al conectar con la API de Mensajes.</td></tr>`;
+            });
+        }
+
+        // Buscador reactivo rápido por front-end (Para Miembros)
+        function buscarMiembro() {
+            let input = document.getElementById("tablaBuscador").value.toLowerCase();
+            let filas = document.querySelectorAll("#tablaMiembros tbody tr");
+
+            filas.forEach(fila => {
+                let texto = fila.innerText.toLowerCase();
+                fila.style.display = texto.includes(input) ? "" : "none";
+            });
+        }
+
+        // Alerta SweetAlert2 para borrado seguro de Miembros
+        function confirmarEliminar(id, nombre) {
+            Swal.fire({
+                title: '¿Estás seguro?',
+                text: `Vas a eliminar permanentemente del sistema a: ${nombre}`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#dc3545',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Sí, borrar',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = `/Personas/Eliminar/${id}`;
+                }
+            });
+        }
+    </script>
+}
