@@ -1,6 +1,7 @@
+
 /**
  * admin-personas.js
- * Control de formulario modular y asíncrono para la sección de Personas en IglesiaGo.
+ * Control de formulario modular y asíncrono conectado al API de Personas en IglesiaGo.
  */
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -18,12 +19,35 @@ document.addEventListener("DOMContentLoaded", function () {
                 return;
             }
 
-            // 3. Empaquetado automático de inputs
+            // 3. Extraemos el ID para saber si es una Creación o una Edición
+            const idElement = document.getElementById("Id");
+            const id = idElement ? parseInt(idElement.value) : 0;
+
+            // 4. Mapeamos los datos del formulario a un Objeto JSON plano (compatible con tu PersonaUpsertDto)
             const formData = new FormData(form);
-            const actionUrl = form.getAttribute("action");
+            const dataObj = {};
+            formData.forEach((value, key) => {
+                // Saltamos el token antiforgery ya que las APIs REST por defecto no lo procesan igual
+                if (key !== "__RequestVerificationToken") {
+                    dataObj[key] = value;
+                }
+            });
+
+            // Ajustes de tipos obligatorios para que el mapeo en C# no falle
+            dataObj.FechaNacimiento = (dataObj.FechaNacimiento && dataObj.FechaNacimiento.trim() !== "") ? dataObj.FechaNacimiento : null;
+            dataObj.UsuarioId = dataObj.UsuarioId ? dataObj.UsuarioId : null;
+
+            // 5. Configuración dinámica de URL y Método HTTP según corresponda (REST)
+            let actionUrl = "/api/personas";
+            let httpMethod = "POST"; // Por defecto, Crear
+
+            if (id > 0) {
+                actionUrl = `/api/personas/${id}`;
+                httpMethod = "PUT"; // Si tiene ID, es Editar
+            }
 
             try {
-                // Bloqueo de pantalla estético mientras procesa la base de datos
+                // Bloqueo estético de pantalla
                 Swal.fire({
                     title: 'Procesando...',
                     text: 'Guardando los cambios en el sistema.',
@@ -33,34 +57,40 @@ document.addEventListener("DOMContentLoaded", function () {
                     }
                 });
 
-                // 4. Envío por Fetch a tu PersonasController
+                // 6. Envío de la petición en formato JSON al API
                 const response = await fetch(actionUrl, {
-                    method: "POST",
-                    body: formData,
+                    method: httpMethod,
+                    body: JSON.stringify(dataObj),
                     headers: {
-                        // Token de seguridad crucial para evitar errores HTTP 400/419 en ASP.NET Core
-                        "RequestVerificationToken": document.querySelector('input[name="__RequestVerificationToken"]')?.value
+                        "Content-Type": "application/json"
                     }
                 });
 
-                const resultado = await response.json();
+                // 7. Procesamiento de respuestas REST
+                if (response.ok) {
+                    // Si es PUT (NoContent / 204), no trae cuerpo JSON
+                    let mensajeExito = id > 0 ? 'Miembro actualizado con éxito.' : 'Miembro creado con éxito.';
+                    
+                    if (httpMethod === "POST") {
+                        const resultado = await response.json();
+                        mensajeExito = `Miembro ${resultado.nombres} guardado correctamente.`;
+                    }
 
-                if (response.ok && resultado.success) {
                     Swal.fire({
                         title: '¡Completado!',
-                        text: resultado.mensaje || 'Miembro guardado con éxito.',
+                        text: mensajeExito,
                         icon: 'success',
                         confirmButtonText: 'Aceptar',
                         confirmButtonColor: '#0d6efd'
                     }).then(() => {
-                        // Refresca el Dashboard para actualizar la tabla y las tarjetas de contadores
                         window.location.reload();
                     });
                 } else {
-                    // Manejo de errores lógicos del backend (ej: DNI repetido)
+                    // Captura errores de validación del API (ej: 400 BadRequest - DNI Duplicado)
+                    const errorJson = await response.json();
                     Swal.fire({
                         title: 'No se pudo guardar',
-                        text: resultado.mensaje || 'Verifique los datos ingresados.',
+                        text: errorJson.mensaje || 'Verifique los datos ingresados en el formulario.',
                         icon: 'error',
                         confirmButtonText: 'Corregir',
                         confirmButtonColor: '#dc3545'
@@ -68,10 +98,10 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
 
             } catch (error) {
-                console.error("Error crítico en AJAX:", error);
+                console.error("Error crítico en AJAX hacia el API:", error);
                 Swal.fire({
                     title: 'Error de Red',
-                    text: 'No se pudo conectar con el servidor. Reintente en unos instantes.',
+                    text: 'No se pudo conectar con el servidor API. Reintente en unos instantes.',
                     icon: 'warning',
                     confirmButtonText: 'Entendido',
                     confirmButtonColor: '#ffc107'
@@ -83,52 +113,138 @@ document.addEventListener("DOMContentLoaded", function () {
 
 /**
  * Mapea los datos del modelo Persona seleccionados en la tabla directamente
- * sobre los inputs generados por los Tag Helpers de la vista parcial.
- * @param {Object} p - Entidad Persona serializada desde Razor.
+ * sobre los inputs del Modal.
+ * @param {Object} p - Entidad Persona serializada.
  */
 function cargarMiembroEnFormulario(p) {
     if (!p) return;
 
     // Campos ocultos y estructurales
     document.getElementById("Id").value = p.Id || 0;
-    document.getElementById("Activo").value = p.Activo !== undefined ? p.Activo : true;
+    
+    // Si tu formulario maneja el estado activo
+    const activoElement = document.getElementById("Activo");
+    if (activoElement) {
+        activoElement.value = p.Activo !== undefined ? p.Activo : true;
+    }
 
     // Sección: Datos Personales
     document.getElementById("DocumentoIdentidad").value = p.DocumentoIdentidad || "";
     document.getElementById("Nombres").value = p.Nombres || "";
     document.getElementById("Apellidos").value = p.Apellidos || "";
-    document.getElementById("Genero").value = p.Genero || "";
-    document.getElementById("EstadoCivil").value = p.EstadoCivil || "";
+    
+    const generoElement = document.getElementById("Genero");
+    if (generoElement) generoElement.value = p.Genero || "";
+    
+    const estadoCivilElement = document.getElementById("EstadoCivil");
+    if (estadoCivilElement) estadoCivilElement.value = p.EstadoCivil || "";
 
-    // Manejo correcto de la fecha para input type="date" (Formato requerido: YYYY-MM-DD)
-    if (p.FechaNacimiento) {
-        const fecha = new Date(p.FechaNacimiento);
-        const yyyy = fecha.getFullYear();
-        const mm = String(fecha.getMonth() + 1).padStart(2, '0');
-        const dd = String(fecha.getDate()).padStart(2, '0');
-        document.getElementById("FechaNacimiento").value = `${yyyy}-${mm}-${dd}`;
-    } else {
-        document.getElementById("FechaNacimiento").value = "";
+    // Manejo de la fecha (Format: YYYY-MM-DD)
+    const fechaInput = document.getElementById("FechaNacimiento");
+    if (fechaInput) {
+        if (p.FechaNacimiento) {
+            const fecha = new Date(p.FechaNacimiento);
+            const yyyy = fecha.getFullYear();
+            const mm = String(fecha.getMonth() + 1).padStart(2, '0');
+            const dd = String(fecha.getDate()).padStart(2, '0');
+            fechaInput.value = `${yyyy}-${mm}-${dd}`;
+        } else {
+            fechaInput.value = "";
+        }
     }
 
     // Sección: Contacto y Ubicación
     document.getElementById("Email").value = p.Email || "";
     document.getElementById("Telefono").value = p.Telefono || "";
-    document.getElementById("TelefonoAlternativo").value = p.TelefonoAlternativo || "";
-    document.getElementById("Direccion").value = p.Direccion || "";
+    
+    const telAltElement = document.getElementById("TelefonoAlternativo");
+    if (telAltElement) telAltElement.value = p.TelefonoAlternativo || "";
+    
+    const dirElement = document.getElementById("Direccion");
+    if (dirElement) dirElement.value = p.Direccion || "";
+    
     document.getElementById("Ciudad").value = p.Ciudad || "";
-    document.getElementById("EstadoProvincia").value = p.EstadoProvincia || "";
-    document.getElementById("CodigoPostal").value = p.CodigoPostal || "";
+    
+    const estElement = document.getElementById("EstadoProvincia");
+    if (estElement) estElement.value = p.EstadoProvincia || "";
+    
+    const cpElement = document.getElementById("CodigoPostal");
+    if (cpElement) cpElement.value = p.CodigoPostal || "";
+    
     document.getElementById("Pais").value = p.Pais || "Argentina";
     document.getElementById("TipoPersona").value = p.TipoPersona || "Miembro";
-    document.getElementById("UsuarioId").value = p.UsuarioId || "";
+    
+    const userElement = document.getElementById("UsuarioId");
+    if (userElement) userElement.value = p.UsuarioId || "";
 
-    // 5. Cambio dinámico de interfaz para indicar modo Edición
-    const cardTitle = document.querySelector("#seccionFormulario h2");
-    if (cardTitle) {
-        cardTitle.innerHTML = '<i class="fa-solid fa-user-pen me-2"></i>Editar Miembro';
+    // Corrección del scroll innecesario para Modales
+    document.getElementById("seccionFormulario")?.scrollIntoView({ behavior: 'smooth' });
+}
+
+/**
+ * Realiza el borrado lógico (desactivar/activar) de un miembro mediante el API.
+ * @param {number} id - ID de la persona.
+ * @param {string} nombre - Nombre del miembro para mostrar en los textos.
+ * @param {boolean} activar - true si se quiere activar, false si se quiere desactivar.
+ */
+
+
+
+async function confirmarCambioEstado(id, nombre, activar) {
+    const accionTexto = activar ? 'activar' : 'desactivar';
+    const accionPasado = activar ? 'activado' : 'desactivado';
+    const colorBoton = activar ? '#198754' : '#ffc107';
+
+    // 1. Mostrar cartel de confirmación al usuario
+    const resultado = await Swal.fire({
+        title: `¿Querés ${accionTexto} a ${nombre}?`,
+        text: `El miembro cambiará su estado a ${accionPasado} en el sistema.`,
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: colorBoton,
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: `Sí, ${accionTexto}`,
+        cancelButtonText: 'Cancelar'
+    });
+
+    if (!resultado.isConfirmed) return;
+
+    try {
+        // 2. Consumir el endpoint PATCH de la API REST (Correctamente cerrado)
+        const response = await fetch(`/api/personas/${id}/estado?activar=${activar}`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            // 3. Éxito: Mostrar alerta y recargar
+            await Swal.fire({
+                title: '¡Operación exitosa!',
+                text: data.mensaje || `El miembro fue ${accionPasado} correctamente.`,
+                icon: 'success',
+                timer: 2000,
+                showConfirmButton: false
+            });
+            
+            location.reload(); 
+        } else {
+            Swal.fire({
+                title: 'Error',
+                text: data.mensaje || 'No se pudo procesar la solicitud.',
+                icon: 'error'
+            });
+        }
+
+    } catch (error) {
+        console.error('Error en la petición:', error);
+        Swal.fire({
+            title: 'Error de comunicación',
+            text: 'No se pudo conectar con el servidor. Intentá de nuevo más tarde.',
+            icon: 'error'
+        });
     }
-
-    // Hace scroll suave hacia el formulario si estás en pantallas chicas
-    document.getElementById("seccionFormulario").scrollIntoView({ behavior: 'smooth' });
 }

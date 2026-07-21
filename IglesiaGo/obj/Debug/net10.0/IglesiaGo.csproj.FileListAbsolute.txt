@@ -195,4 +195,4 @@ C:\Users\JSON\Desktop\IglesiaGoWeb\iglesiago\obj\Debug\net10.0\refint\IglesiaGo.
 C:\Users\JSON\Desktop\IglesiaGoWeb\iglesiago\obj\Debug\net10.0\IglesiaGo.pdb
 C:\Users\JSON\Desktop\IglesiaGoWeb\iglesiago\obj\Debug\net10.0\IglesiaGo.genruntimeconfig.cache
 C:\Users\JSON\Desktop\IglesiaGoWeb\iglesiago\obj\Debug\net10.0\ref\IglesiaGo.dll
-C:\Users\JSON\Desktop\IglesiaGoWeb\iglesiago\obj\Debug\net10.0\compressed\vxdkitojc0-{0}-ri0hvnvrsb-ri0hvnvrsb.gz
+C:\Users\JSON\Desktop\IglesiaGoWeb\iglesiago\obj\Debug\net10.0\compressed\vxdkitojc0-{0}-irwho4pfxi-irwho4pfxi.gz

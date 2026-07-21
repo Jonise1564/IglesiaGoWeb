@@ -1,4 +1,4 @@
-@model IEnumerable<IglesiaGo.Models.Persona>
+@* @model IEnumerable<IglesiaGo.Models.Persona>
 
 @{
     ViewData["Title"] = "Dashboard IglesiaGo";
@@ -412,4 +412,84 @@
             });
         }
     </script>
+} *@
+
+
+@model IEnumerable<IglesiaGo.Models.Persona>
+
+@{
+    ViewData["Title"] = "Dashboard IglesiaGo";
 }
+
+<div class="container-fluid my-4">
+    <!-- 1. Tarjetas de Estadísticas Superiores -->
+    @await Html.PartialAsync("_DashboardCards", Model)
+
+    <div class="row">
+        <div class="col-lg-12 mb-4">
+            <div class="card border-0 shadow-sm p-4 h-100">
+                
+                <!-- Navegación de Pestañas -->
+                <ul class="nav nav-tabs border-bottom-0 mb-3" id="dashboardTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active fw-bold text-uppercase px-3 py-2 small" id="miembros-tab" data-bs-toggle="tab" data-bs-target="#miembros" type="button" role="tab" aria-controls="miembros" aria-selected="true">
+                            <i class="fa-solid fa-user-group me-2"></i>Miembros
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link fw-bold text-uppercase px-3 py-2 small" id="ensenanzas-tab" data-bs-toggle="tab" data-bs-target="#ensenanzas" type="button" role="tab" aria-controls="ensenanzas" aria-selected="false">
+                            <i class="fa-solid fa-book-open me-2"></i>Enseñanzas
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link fw-bold text-uppercase px-3 py-2 small" id="mensajes-tab" data-bs-toggle="tab" data-bs-target="#mensajes" type="button" role="tab" aria-controls="mensajes" aria-selected="false">
+                            <i class="fa-solid fa-envelope me-2"></i>Mensajes
+                        </button>
+                    </li>
+                </ul>
+
+                <!-- Contenido de las Pestañas -->
+                <div class="tab-content" id="dashboardTabsContent">
+                    <div class="tab-pane fade show active" id="miembros" role="tabpanel" aria-labelledby="miembros-tab">
+                        @await Html.PartialAsync("_TabMiembros", Model)
+                    </div>
+
+                    <div class="tab-pane fade" id="ensenanzas" role="tabpanel" aria-labelledby="ensenanzas-tab">
+                        @await Html.PartialAsync("_TabEnsenanzas")
+                    </div>
+
+                    <div class="tab-pane fade" id="mensajes" role="tabpanel" aria-labelledby="mensajes-tab">
+                        @await Html.PartialAsync("_TabMensajes")
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Gestión de Miembros -->
+<div class="modal fade" id="miembroModal" tabindex="-1" aria-labelledby="miembroModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-dark text-white">
+                <h5 class="modal-title fw-bold" id="miembroModalLabel">Gestión de Miembro</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body p-4 bg-light">
+                @await Html.PartialAsync("_PersonasSection", new IglesiaGo.Models.Persona { FechaNacimiento = DateTime.Today, Pais = "Argentina" })
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @await Html.PartialAsync("_DashboardScripts")
+}
+
+
+
+
+
+
+

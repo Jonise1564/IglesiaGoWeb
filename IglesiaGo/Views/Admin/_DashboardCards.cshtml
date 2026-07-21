@@ -1,0 +1,48 @@
+@model IEnumerable<IglesiaGo.Models.Persona>
+
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm bg-primary text-white p-3">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h6 class="text-uppercase small mb-1 opacity-75">Total Miembros</h6>
+                    <h3 class="fw-bold m-0">@Model.Count()</h3>
+                </div>
+                <i class="fa-solid fa-users fa-2x opacity-50"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm bg-success text-white p-3">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h6 class="text-uppercase small mb-1 opacity-75">Músicos</h6>
+                    <h3 class="fw-bold m-0">@Model.Count(p => p.TipoPersona == "Músico")</h3>
+                </div>
+                <i class="fa-solid fa-guitar fa-2x opacity-50"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm bg-info text-white p-3">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h6 class="text-uppercase small mb-1 opacity-75">Multimedia</h6>
+                    <h3 class="fw-bold m-0">@Model.Count(p => p.TipoPersona == "Multimedia")</h3>
+                </div>
+                <i class="fa-solid fa-camera fa-2x opacity-50"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm bg-warning text-dark p-3">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h6 class="text-uppercase small mb-1 opacity-75">Liderazgo</h6>
+                    <h3 class="fw-bold m-0">@Model.Count(p => p.TipoPersona == "Pastor" || p.TipoPersona == "Diácono")</h3>
+                </div>
+                <i class="fa-solid fa-user-tie fa-2x opacity-25"></i>
+            </div>
+        </div>
+    </div>
+</div>

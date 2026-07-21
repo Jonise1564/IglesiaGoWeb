@@ -34,8 +34,28 @@ build_property.EnableCodeStyleSeverity =
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cRGFzaGJvYXJkLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
+[C:/Users/JSON/Desktop/IglesiaGoWeb/iglesiago/Views/Admin/_DashboardCards.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cX0Rhc2hib2FyZENhcmRzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/JSON/Desktop/IglesiaGoWeb/iglesiago/Views/Admin/_DashboardScripts.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cX0Rhc2hib2FyZFNjcmlwdHMuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
 [C:/Users/JSON/Desktop/IglesiaGoWeb/iglesiago/Views/Admin/_PersonasSection.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cX1BlcnNvbmFzU2VjdGlvbi5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/JSON/Desktop/IglesiaGoWeb/iglesiago/Views/Admin/_TabEnsenanzas.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cX1RhYkVuc2VuYW56YXMuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/JSON/Desktop/IglesiaGoWeb/iglesiago/Views/Admin/_TabMensajes.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cX1RhYk1lbnNhamVzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/JSON/Desktop/IglesiaGoWeb/iglesiago/Views/Admin/_TabMiembros.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cX1RhYk1pZW1icm9zLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/JSON/Desktop/IglesiaGoWeb/iglesiago/Views/Home/Contacto.cshtml]
