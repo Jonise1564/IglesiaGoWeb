@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("IglesiaGo")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+013f5e3ce68ad14c2238953892c9fea7ea48d6e6")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+168173ff2bc95aa179cc8785e17f84f9645a98bf")]
 [assembly: System.Reflection.AssemblyProductAttribute("IglesiaGo")]
 [assembly: System.Reflection.AssemblyTitleAttribute("IglesiaGo")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

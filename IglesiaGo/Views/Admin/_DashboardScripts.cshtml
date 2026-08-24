@@ -14,22 +14,24 @@
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="~/js/admin-personas.js" asp-append-version="true"></script>
+<script src="~/js/admin-ensenanzas.js" asp-append-version="true"></script>
+<script src="~/js/admin-mensajes.js" asp-append-version="true"></script>
 
 <style>
     .bg-purple {
-        background-color: #6f42c1;
+    background-color: #6f42c1;
     }
 
     .nav-tabs .nav-link {
-        color: #666;
-        border: none;
-        border-bottom: 2px solid transparent;
+    color: #666;
+    border: none;
+    border-bottom: 2px solid transparent;
     }
 
     .nav-tabs .nav-link.active {
-        color: #000 !important;
-        border-bottom: 2px solid #000 !important;
-        background-color: transparent !important;
+    color: #000 !important;
+    border-bottom: 2px solid #000 !important;
+    background-color: transparent !important;
     }
 </style>
 
@@ -37,71 +39,71 @@
     let bootstrapMiembroModal;
 
     document.addEventListener("DOMContentLoaded", function () {
-        bootstrapMiembroModal = new bootstrap.Modal(document.getElementById('miembroModal'));
+    bootstrapMiembroModal = new bootstrap.Modal(document.getElementById('miembroModal'));
 
-        const alertMsg = "@Html.Raw(TempData["ResultadoPersona"] ?? "")";
-        if (alertMsg.length > 0) {
-            Swal.fire({
-                title: '¡Operación Exitosa!',
-                text: alertMsg,
-                icon: 'success',
-                confirmButtonText: 'Perfecto',
-                confirmButtonColor: '#0d6efd'
-            });
-            window.history.replaceState({}, document.title, window.location.pathname);
-        }
+    const alertMsg = "@Html.Raw(TempData["ResultadoPersona"] ?? "")";
+    if (alertMsg.length > 0) {
+    Swal.fire({
+    title: '¡Operación Exitosa!',
+    text: alertMsg,
+    icon: 'success',
+    confirmButtonText: 'Perfecto',
+    confirmButtonColor: '#0d6efd'
+    });
+    window.history.replaceState({}, document.title, window.location.pathname);
+    }
 
-        cargarEnsenanzas();
-        cargarMensajes();
+    cargarEnsenanzas();
+    cargarMensajes();
     });
 
     function abrirModalNuevoMiembro() {
-        document.getElementById("miembroModalLabel").textContent = "REGISTRAR NUEVO MIEMBRO";
+    document.getElementById("miembroModalLabel").textContent = "REGISTRAR NUEVO MIEMBRO";
 
-        if (typeof limpiarFormulario === "function") {
-            limpiarFormulario();
-        } else {
-            const form = document.querySelector("#miembroModal form");
-            if (form) form.reset();
-            const idInput = document.querySelector("#miembroModal input[name='Id']");
-            if (idInput) idInput.value = "0";
-        }
+    if (typeof limpiarFormulario === "function") {
+    limpiarFormulario();
+    } else {
+    const form = document.querySelector("#miembroModal form");
+    if (form) form.reset();
+    const idInput = document.querySelector("#miembroModal input[name='Id']");
+    if (idInput) idInput.value = "0";
+    }
 
-        bootstrapMiembroModal.show();
+    bootstrapMiembroModal.show();
     }
 
     function abrirModalEditarMiembro(boton) {
-        const personaObj = {
-            Id: boton.getAttribute("data-id"),
-            Nombres: boton.getAttribute("data-nombres"),
-            Apellidos: boton.getAttribute("data-apellidos"),
-            DocumentoIdentidad: boton.getAttribute("data-dni"),
-            Telefono: boton.getAttribute("data-telefono"),
-            Email: boton.getAttribute("data-email"),
-            Ciudad: boton.getAttribute("data-ciudad"),
-            TipoPersona: boton.getAttribute("data-tipo"),
-            FechaNacimiento: boton.getAttribute("data-nacimiento"),
-            Pais: boton.getAttribute("data-pais")
-        };
+    const personaObj = {
+    Id: boton.getAttribute("data-id"),
+    Nombres: boton.getAttribute("data-nombres"),
+    Apellidos: boton.getAttribute("data-apellidos"),
+    DocumentoIdentidad: boton.getAttribute("data-dni"),
+    Telefono: boton.getAttribute("data-telefono"),
+    Email: boton.getAttribute("data-email"),
+    Ciudad: boton.getAttribute("data-ciudad"),
+    TipoPersona: boton.getAttribute("data-tipo"),
+    FechaNacimiento: boton.getAttribute("data-nacimiento"),
+    Pais: boton.getAttribute("data-pais")
+    };
 
-        document.getElementById("miembroModalLabel").textContent = "MODIFICAR MIEMBRO";
+    document.getElementById("miembroModalLabel").textContent = "MODIFICAR MIEMBRO";
 
-        if (typeof cargarMiembroEnFormulario === "function") {
-            cargarMiembroEnFormulario(personaObj);
-        } else {
-            console.error("La función cargarMiembroEnFormulario no está definida en tus scripts.");
-        }
-
-        if (bootstrapMiembroModal) {
-            bootstrapMiembroModal.show();
-        } else {
-            const modalElement = document.getElementById('miembroModal');
-            const instanciaModal = bootstrap.Modal.getInstance(modalElement) || new bootstrap.Modal(modalElement);
-            instanciaModal.show();
-        }
+    if (typeof cargarMiembroEnFormulario === "function") {
+    cargarMiembroEnFormulario(personaObj);
+    } else {
+    console.error("La función cargarMiembroEnFormulario no está definida en tus scripts.");
     }
 
-    function cargarEnsenanzas() {
+    if (bootstrapMiembroModal) {
+    bootstrapMiembroModal.show();
+    } else {
+    const modalElement = document.getElementById('miembroModal');
+    const instanciaModal = bootstrap.Modal.getInstance(modalElement) || new bootstrap.Modal(modalElement);
+    instanciaModal.show();
+    }
+    }
+
+    @* function cargarEnsenanzas() {
         const token = localStorage.getItem("token");
         fetch('/Consultas/GetEnsenanzas', {
             headers: { 'Authorization': `Bearer ${token}` }
@@ -111,10 +113,10 @@
             const tbody = document.getElementById("tablaEnsenanzas");
             tbody.innerHTML = "";
 
-            if (data.length === 0) {
+        if (data.length === 0) {
                 tbody.innerHTML = `<tr><td colspan="4" class="text-center py-4 text-muted">No hay enseñanzas registradas todavía.</td></tr>`;
-                return;
-            }
+        return;
+        }
 
             data.forEach(e => {
                 const fecha = new Date(e.fechaPublicacion).toLocaleDateString();
@@ -126,20 +128,68 @@
                     </td>
                     <td>${fecha}</td>
                     <td><span class="badge bg-secondary">${e.pasajeClave || 'General'}</span></td>
-                    <td class="text-end">
-                        <button class="btn btn-sm btn-outline-primary border-0 me-1" onclick="editarEnsenanza(${e.id})"><i class="fa-solid fa-pen"></i></button>
-                        <button class="btn btn-sm btn-outline-danger border-0" onclick="eliminarEnsenanza(${e.id})"><i class="fa-solid fa-trash"></i></button>
-                    </td>
-                </tr>
-                `;
-            });
+        <td class="text-end">
+        <button class="btn btn-sm btn-outline-primary border-0 me-1" onclick="editarEnsenanza(${e.id})"><i class="fa-solid fa-pen"></i></button>
+        <button class="btn btn-sm btn-outline-danger border-0" onclick="eliminarEnsenanza(${e.id})"><i class="fa-solid fa-trash"></i></button>
+        </td>
+        </tr>
+        `;
+        });
         })
         .catch(() => {
             document.getElementById("tablaEnsenanzas").innerHTML = `<tr><td colspan="4" class="text-center text-danger py-3">Error al conectar con la API de Enseñanzas.</td></tr>`;
         });
+    } *@
+
+
+
+
+
+
+    function cargarEnsenanzas() {
+    const token = localStorage.getItem("token");
+
+    // Cambiamos '/Consultas/GetEnsenanzas' por '/api/EnsenanzasApi'
+    fetch('/api/EnsenanzasApi', {
+    headers: { 'Authorization': `Bearer ${token}` }
+    })
+    .then(res => res.ok ? res.json() : [])
+    .then(data => {
+    const tbody = document.getElementById("tablaEnsenanzas");
+    tbody.innerHTML = "";
+
+    if (data.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="4" class="text-center py-4 text-muted">No hay enseñanzas registradas todavía.</td></tr>`;
+    return;
     }
 
-    function cargarMensajes() {
+    data.forEach(e => {
+    // Nota: asegura que las propiedades coincidan con las de tu modelo (p. ej., e.fechaPublicacion o e.FechaPublicacion)
+    const fecha = new Date(e.fechaPublicacion || e.FechaPublicacion).toLocaleDateString();
+
+    tbody.innerHTML += `
+    <tr>
+    <td>
+    <div class="fw-bold">${e.titulo || e.Titulo}</div>
+    <small class="text-muted">${e.autor || e.Autor || 'Pastor Principal'}</small>
+    </td>
+    <td>${fecha}</td>
+    <td><span class="badge bg-secondary">${e.pasajeClave || e.PasajeClave || 'General'}</span></td>
+    <td class="text-end">
+    <button class="btn btn-sm btn-outline-primary border-0 me-1" onclick="editarEnsenanza(${e.id || e.Id})"><i class="fa-solid fa-pen"></i></button>
+    <button class="btn btn-sm btn-outline-danger border-0" onclick="eliminarEnsenanza(${e.id || e.Id})"><i class="fa-solid fa-trash"></i></button>
+    </td>
+    </tr>
+    `;
+    });
+    })
+    .catch(err => {
+    console.error("Error al obtener enseñanzas:", err);
+    document.getElementById("tablaEnsenanzas").innerHTML = `<tr><td colspan="4" class="text-center text-danger py-3">Error al conectar con la API de Enseñanzas.</td></tr>`;
+    });
+    }
+
+    @* function cargarMensajes() {
         const token = localStorage.getItem("token");
         fetch('/Consultas/GetMensajes', {
             headers: { 'Authorization': `Bearer ${token}` }
@@ -149,10 +199,10 @@
             const tbody = document.getElementById("tablaMensajes");
             tbody.innerHTML = "";
 
-            if (data.length === 0) {
+        if (data.length === 0) {
                 tbody.innerHTML = `<tr><td colspan="5" class="text-center py-4 text-muted">Buzón de entrada vacío.</td></tr>`;
-                return;
-            }
+        return;
+        }
 
             data.forEach(m => {
                 const fecha = new Date(m.fechaEnvio).toLocaleDateString();
@@ -165,91 +215,271 @@
                     <td>${m.asunto}</td>
                     <td>${fecha}</td>
                     <td><span class="badge ${m.leido ? 'bg-success' : 'bg-warning text-dark'}">${m.leido ? 'Leído' : 'Pendiente'}</span></td>
-                    <td class="text-end">
-                        <button class="btn btn-sm btn-outline-primary border-0 me-1" onclick="verMensaje(${m.id})"><i class="fa-solid fa-envelope-open"></i></button>
-                        <button class="btn btn-sm btn-outline-danger border-0" onclick="eliminarMensaje(${m.id})"><i class="fa-solid fa-trash"></i></button>
-                    </td>
-                </tr>
-                `;
-            });
+        <td class="text-end">
+        <button class="btn btn-sm btn-outline-primary border-0 me-1" onclick="verMensaje(${m.id})"><i class="fa-solid fa-envelope-open"></i></button>
+        <button class="btn btn-sm btn-outline-danger border-0" onclick="eliminarMensaje(${m.id})"><i class="fa-solid fa-trash"></i></button>
+        </td>
+        </tr>
+        `;
+        });
         })
         .catch(() => {
             document.getElementById("tablaMensajes").innerHTML = `<tr><td colspan="5" class="text-center text-danger py-3">Error al conectar con la API de Mensajes.</td></tr>`;
         });
+    } *@
+    let bootstrapMensajeModal;
+
+    document.addEventListener("DOMContentLoaded", function () {
+    const modalElem = document.getElementById('mensajeModal');
+    if (modalElem) {
+    bootstrapMensajeModal = new bootstrap.Modal(modalElem);
+    }
+    });
+
+    // 1. CARGAR CONSULTAS / MENSAJES (GET /api/ConsultasApi)
+    function cargarMensajes() {
+    const token = localStorage.getItem("token");
+
+    fetch('/api/ConsultasApi', {
+    headers: {
+    'Authorization': `Bearer ${token}`,
+    'Content-Type': 'application/json'
+    }
+    })
+    .then(res => res.ok ? res.json() : [])
+    .then(data => {
+    const tbody = document.getElementById("tablaMensajes");
+    tbody.innerHTML = "";
+
+    if (!data || data.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="5" class="text-center py-4 text-muted">Buzón de entrada vacío.</td></tr>`;
+    return;
     }
 
-    function buscarMiembro() {
-        let input = document.getElementById("tablaBuscador").value.toLowerCase();
-        let filas = document.querySelectorAll("#tablaMiembros tbody tr");
+    data.forEach(m => {
+    const id = m.id || m.Id;
+    const remitente = m.nombreRemitente || m.NombreRemitente || m.nombre || m.Nombre || 'Anónimo';
+    const correo = m.correo || m.Correo || m.email || m.Email || '';
+    const asunto = m.asunto || m.Asunto || 'Sin asunto';
+    const fechaVal = m.fechaCreacion || m.FechaCreacion || m.fechaEnvio || m.FechaEnvio;
+    const fecha = fechaVal ? new Date(fechaVal).toLocaleDateString() : '-';
 
-        filas.forEach(fila => {
-            let texto = fila.innerText.toLowerCase();
-            fila.style.display = texto.includes(input) ? "" : "none";
-        });
+    // Evaluamos 'atendido' (o 'leido')
+    const atendido = m.atendido ?? m.Atendido ?? m.leido ?? m.Leido ?? false;
+
+    tbody.innerHTML += `
+    <tr>
+    <td>
+    <div class="fw-bold">${remitente}</div>
+    <small class="text-muted">${correo}</small>
+    </td>
+    <td>${asunto}</td>
+    <td>${fecha}</td>
+    <td>
+    <span class="badge ${atendido ? 'bg-success' : 'bg-warning text-dark'}">
+    ${atendido ? '<i class="fa-solid fa-check me-1"></i>Atendido' : '<i class="fa-solid fa-clock me-1"></i>Pendiente'}
+    </span>
+    </td>
+    <td class="text-end">
+    <button class="btn btn-sm btn-outline-primary border-0 me-1" title="Ver Consulta / Responder" onclick="verMensaje(${id})">
+    <i class="fa-solid fa-envelope-open"></i>
+    </button>
+    <button class="btn btn-sm btn-outline-danger border-0" title="Eliminar" onclick="eliminarMensaje(${id})">
+    <i class="fa-solid fa-trash"></i>
+    </button>
+    </td>
+    </tr>
+    `;
+    });
+    })
+    .catch(err => {
+    console.error("Error al cargar consultas:", err);
+    document.getElementById("tablaMensajes").innerHTML = `<tr><td colspan="5" class="text-center text-danger py-3">Error al conectar con la API de Consultas.</td></tr>`;
+    });
+    }
+
+    // 2. VER DETALLE DE LA CONSULTA
+    async function verMensaje(id) {
+    const token = localStorage.getItem("token");
+    try {
+    const res = await fetch(`/api/ConsultasApi/${id}`, {
+    headers: { 'Authorization': `Bearer ${token}` }
+    });
+
+    if (!res.ok) throw new Error("No se pudo obtener la consulta.");
+
+    const consulta = await res.json();
+
+    // Mapear campos al Modal
+    const remitente = consulta.nombreRemitente || consulta.NombreRemitente || consulta.nombre || 'Anónimo';
+    const correo = consulta.correo || consulta.Correo || consulta.email || '';
+
+    document.getElementById("modalMensajeRemitente").textContent = `${remitente} (${correo})`;
+    document.getElementById("modalMensajeAsunto").textContent = consulta.asunto || consulta.Asunto || 'Sin asunto';
+    document.getElementById("modalMensajeCuerpo").textContent = consulta.mensaje || consulta.Mensaje || consulta.contenido || consulta.Contenido || 'Sin contenido';
+
+    // Guardar el ID actual en el modal para cuando envíe respuesta
+    document.getElementById("modalConsultaId").value = consulta.id || consulta.Id;
+
+    if (bootstrapMensajeModal) {
+    bootstrapMensajeModal.show();
+    }
+    } catch (err) {
+    Swal.fire('Error', 'No se pudo abrir la consulta.', 'error');
+    }
+    }
+
+    // 3. RESPONDER A LA CONSULTA (POST /api/ConsultasApi/Responder)
+    async function enviarRespuestaConsulta() {
+    const token = localStorage.getItem("token");
+    const consultaId = parseInt(document.getElementById("modalConsultaId").value);
+    const respuestaTexto = document.getElementById("modalRespuestaTexto").value.trim();
+
+    if (!respuestaTexto) {
+    Swal.fire('Atención', 'Escribe un mensaje para responder.', 'warning');
+    return;
+    }
+
+    const payload = {
+    ConsultaId: consultaId,
+    Mensaje: respuestaTexto,
+    EsDelAdministrador: true
+    };
+
+    try {
+    const res = await fetch('/api/ConsultasApi/Responder', {
+    method: 'POST',
+    headers: {
+    'Authorization': `Bearer ${token}`,
+    'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(payload)
+    });
+
+    if (res.ok) {
+    Swal.fire('¡Enviado!', 'Respuesta guardada y consulta marcada como atendida.', 'success');
+    document.getElementById("modalRespuestaTexto").value = "";
+    bootstrapMensajeModal.hide();
+    cargarMensajes(); // Recargar la tabla para ver el badge "Atendido"
+    } else {
+    const errData = await res.json();
+    Swal.fire('Error', errData.mensaje || 'Error al enviar respuesta.', 'error');
+    }
+    } catch (err) {
+    Swal.fire('Error', 'No se pudo conectar con el servidor.', 'error');
+    }
+    }
+
+    // 4. ELIMINAR CONSULTA (DELETE /api/ConsultasApi/{id})
+    function eliminarMensaje(id) {
+    Swal.fire({
+    title: '¿Eliminar consulta?',
+    text: "Se borrará la consulta y todo su historial de respuestas.",
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#dc3545',
+    cancelButtonColor: '#6c757d',
+    confirmButtonText: 'Sí, eliminar',
+    cancelButtonText: 'Cancelar'
+    }).then(async (result) => {
+    if (result.isConfirmed) {
+    const token = localStorage.getItem("token");
+    try {
+    const res = await fetch(`/api/ConsultasApi/${id}`, {
+    method: 'DELETE',
+    headers: { 'Authorization': `Bearer ${token}` }
+    });
+
+    if (res.ok) {
+    Swal.fire('¡Eliminado!', 'La consulta ha sido borrada.', 'success');
+    cargarMensajes();
+    } else {
+    Swal.fire('Error', 'No se pudo eliminar la consulta.', 'error');
+    }
+    } catch (err) {
+    Swal.fire('Error de Conexión', 'No se pudo comunicar con el servidor.', 'error');
+    }
+    }
+    });
+    }
+
+
+
+
+
+
+    function buscarMiembro() {
+    let input = document.getElementById("tablaBuscador").value.toLowerCase();
+    let filas = document.querySelectorAll("#tablaMiembros tbody tr");
+
+    filas.forEach(fila => {
+    let texto = fila.innerText.toLowerCase();
+    fila.style.display = texto.includes(input) ? "" : "none";
+    });
     }
 
     function confirmarCambioEstado(id, nombre, volverActivar) {
-        const titulo = volverActivar ? '¿Activar miembro?' : '¿Desactivar miembro?';
-        const texto = volverActivar 
-            ? `Vas a dar de alta nuevamente a ${nombre} en el sistema.` 
-            : `Vas a dar de baja temporalmente a ${nombre}. Permanecerá en el sistema pero cambiará su estado.`;
+    const titulo = volverActivar ? '¿Activar miembro?' : '¿Desactivar miembro?';
+    const texto = volverActivar
+    ? `Vas a dar de alta nuevamente a ${nombre} en el sistema.`
+    : `Vas a dar de baja temporalmente a ${nombre}. Permanecerá en el sistema pero cambiará su estado.`;
 
-        Swal.fire({
-            title: titulo,
-            text: texto,
-            icon: 'question',
-            showCancelButton: true,
-            confirmButtonColor: volverActivar ? '#198754' : '#ffc107',
-            cancelButtonColor: '#6c757d',
-            confirmButtonText: volverActivar ? 'Sí, activar' : 'Sí, desactivar',
-            cancelButtonText: 'Cancelar'
-        }).then(async (result) => {
-            if (result.isConfirmed) {
-                try {
-                    // 1. Obtener los datos actuales de la persona
-                    const getResponse = await fetch(`/api/personas/${id}`);
-                    if (!getResponse.ok) throw new Error("No se pudo obtener la información del miembro.");
-                    
-                    const persona = await getResponse.json();
-                    
-                    // 2. Modificar la propiedad de borrado lógico (1 = Activo, 0 = Inactivo)
-                    persona.activo = volverActivar ? 1 : 0;
+    Swal.fire({
+    title: titulo,
+    text: texto,
+    icon: 'question',
+    showCancelButton: true,
+    confirmButtonColor: volverActivar ? '#198754' : '#ffc107',
+    cancelButtonColor: '#6c757d',
+    confirmButtonText: volverActivar ? 'Sí, activar' : 'Sí, desactivar',
+    cancelButtonText: 'Cancelar'
+    }).then(async (result) => {
+    if (result.isConfirmed) {
+    try {
+    // 1. Obtener los datos actuales de la persona
+    const getResponse = await fetch(`/api/personas/${id}`);
+    if (!getResponse.ok) throw new Error("No se pudo obtener la información del miembro.");
 
-                    // 3. Enviar actualización al endpoint PUT del controlador API
-                    const putResponse = await fetch(`/api/personas/${id}`, {
-                        method: 'PUT',
-                        body: JSON.stringify(persona),
-                        headers: {
-                            'Content-Type': 'application/json'
-                        }
-                    });
+    const persona = await getResponse.json();
 
-                    if (putResponse.ok) {
-                        Swal.fire({
-                            title: '¡Estado Actualizado!',
-                            text: `El miembro ${nombre} ha cambiado de estado con éxito.`,
-                            icon: 'success',
-                            confirmButtonText: 'Aceptar',
-                            confirmButtonColor: '#0d6efd'
-                        }).then(() => {
-                            window.location.reload();
-                        });
-                    } else {
-                        Swal.fire({
-                            title: 'Error',
-                            text: 'El servidor rechazó la actualización de estado.',
-                            icon: 'error'
-                        });
-                    }
-                } catch (error) {
-                    console.error("Error al cambiar estado:", error);
-                    Swal.fire({
-                        title: 'Error de Conexión',
-                        text: 'Hubo un problema al establecer comunicación con el servidor API.',
-                        icon: 'warning'
-                    });
-                }
-            }
-        });
+    // 2. Modificar la propiedad de borrado lógico (1 = Activo, 0 = Inactivo)
+    persona.activo = volverActivar ? 1 : 0;
+
+    // 3. Enviar actualización al endpoint PUT del controlador API
+    const putResponse = await fetch(`/api/personas/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify(persona),
+    headers: {
+    'Content-Type': 'application/json'
+    }
+    });
+
+    if (putResponse.ok) {
+    Swal.fire({
+    title: '¡Estado Actualizado!',
+    text: `El miembro ${nombre} ha cambiado de estado con éxito.`,
+    icon: 'success',
+    confirmButtonText: 'Aceptar',
+    confirmButtonColor: '#0d6efd'
+    }).then(() => {
+    window.location.reload();
+    });
+    } else {
+    Swal.fire({
+    title: 'Error',
+    text: 'El servidor rechazó la actualización de estado.',
+    icon: 'error'
+    });
+    }
+    } catch (error) {
+    console.error("Error al cambiar estado:", error);
+    Swal.fire({
+    title: 'Error de Conexión',
+    text: 'Hubo un problema al establecer comunicación con el servidor API.',
+    icon: 'warning'
+    });
+    }
+    }
+    });
     }
 </script>

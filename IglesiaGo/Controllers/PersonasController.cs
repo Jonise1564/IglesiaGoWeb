@@ -1,3 +1,7 @@
+
+
+
+
 // using Microsoft.AspNetCore.Mvc;
 // using Microsoft.EntityFrameworkCore;
 // using IglesiaGo.Data;
@@ -71,7 +75,7 @@
 //                 Pais = dto.Pais,
 //                 TipoPersona = dto.TipoPersona,
 //                 UsuarioId = dto.UsuarioId,
-//                 Activo = 1 
+//                 Activo = 1
 //             };
 
 //             _context.Personas.Add(nuevaPersona);
@@ -121,9 +125,36 @@
 //             return NoContent();
 //         }
 
-//         // DELETE: api/personas/5
-//         [HttpDelete("{id}")]
-//         public async Task<IActionResult> DeletePersona(int id)
+//         // PATCH: api/personas/5/estado?activar=true
+//         // [HttpPatch("{id}/estado")]
+//         // public async Task<IActionResult> CambiarEstadoPersona(int id, [FromQuery] bool activar = false)
+//         // {
+//         //     var existe = await _context.Personas.AnyAsync(p => p.Id == id);
+//         //     if (!existe)
+//         //     {
+//         //         return NotFound(new { mensaje = "Persona no encontrada" });
+//         //     }
+
+//         //     // Usamos el casteo explícito a sbyte (1 o 0) según el parámetro recibido.
+//         //     // Esto asegura total compatibilidad con tipos sbyte? y columnas tinyint en MySQL.
+//         //     sbyte nuevoEstado = activar ? (sbyte)1 : (sbyte)0;
+
+//         //     var filasAfectadas = await _context.Database.ExecuteSqlInterpolatedAsync(
+//         //         $"UPDATE personas SET Activo = {nuevoEstado} WHERE Id = {id}"
+//         //     );
+
+//         //     if (filasAfectadas == 0)
+//         //     {
+//         //         return BadRequest(new { mensaje = "No se pudo modificar el estado del miembro" });
+//         //     }
+
+//         //     string accionRealizada = activar ? "activada" : "desactivada";
+//         //     return Ok(new { mensaje = $"Persona {accionRealizada} correctamente" });
+//         // }
+
+//         // PATCH: api/personas/5/estado?activar=true
+//         [HttpPatch("{id}/estado")]
+//         public async Task<IActionResult> CambiarEstadoPersona(int id, [FromQuery] bool activar = false)
 //         {
 //             var existe = await _context.Personas.AnyAsync(p => p.Id == id);
 //             if (!existe)
@@ -131,19 +162,22 @@
 //                 return NotFound(new { mensaje = "Persona no encontrada" });
 //             }
 
-//             // Usamos FALSE explícito en la query nativa. MySQL interpreta FALSE como 0 para las columnas tinyint(1).
-//             // Esto evita los problemas de conversión que sufre el tipo sbyte con EF Core.
+//             // Convertimos explícitamente a 1 o 0 para que MySQL (tinyint) no tenga fallos de tipo de dato
+//             int nuevoEstado = activar ? 1 : 0;
+
 //             var filasAfectadas = await _context.Database.ExecuteSqlInterpolatedAsync(
-//                 $"UPDATE personas SET Activo = FALSE WHERE Id = {id}"
+//                 $"UPDATE personas SET Activo = {nuevoEstado} WHERE Id = {id}"
 //             );
 
 //             if (filasAfectadas == 0)
 //             {
-//                 return BadRequest(new { mensaje = "No se pudo desactivar el registro" });
+//                 return BadRequest(new { mensaje = "No se pudo cambiar el estado en la base de datos." });
 //             }
 
-//             return Ok(new { mensaje = "Persona desactivada correctamente" });
+//             string mensajeEstado = activar ? "activado" : "desactivado";
+//             return Ok(new { mensaje = $"Miembro {mensajeEstado} con éxito" });
 //         }
+
 
 //         private bool PersonaExists(int id)
 //         {
@@ -151,6 +185,8 @@
 //         }
 //     }
 // }
+
+
 
 
 
@@ -228,7 +264,7 @@ namespace IglesiaGo.Controllers
                 Pais = dto.Pais,
                 TipoPersona = dto.TipoPersona,
                 UsuarioId = dto.UsuarioId,
-                Activo = 1 
+                Activo = (sbyte)1
             };
 
             _context.Personas.Add(nuevaPersona);
@@ -278,32 +314,47 @@ namespace IglesiaGo.Controllers
             return NoContent();
         }
 
-        // PATCH: api/personas/5/estado?activar=true
-        [HttpPatch("{id}/estado")]
-        public async Task<IActionResult> CambiarEstadoPersona(int id, [FromQuery] bool activar = false)
-        {
-            var existe = await _context.Personas.AnyAsync(p => p.Id == id);
-            if (!existe)
-            {
-                return NotFound(new { mensaje = "Persona no encontrada" });
-            }
+        // PATCH: api/personas/5/estado?activar=false
+        // [HttpPatch("{id}/estado")]
+        // public async Task<IActionResult> CambiarEstadoPersona(int id, [FromQuery] bool activar = false)
+        // {
+        //     var persona = await _context.Personas.FindAsync(id);
 
-            // Usamos el casteo explícito a sbyte (1 o 0) según el parámetro recibido.
-            // Esto asegura total compatibilidad con tipos sbyte? y columnas tinyint en MySQL.
-            sbyte nuevoEstado = activar ? (sbyte)1 : (sbyte)0;
+        //     if (persona == null)
+        //     {
+        //         return NotFound(new { mensaje = "Persona no encontrada" });
+        //     }
 
-            var filasAfectadas = await _context.Database.ExecuteSqlInterpolatedAsync(
-                $"UPDATE personas SET Activo = {nuevoEstado} WHERE Id = {id}"
-            );
+        //     // Casteo explícito a sbyte para que encaje perfectamente con el modelo
+        //     persona.Activo = activar ? (sbyte)1 : (sbyte)0;
+            
+        //     await _context.SaveChangesAsync();
 
-            if (filasAfectadas == 0)
-            {
-                return BadRequest(new { mensaje = "No se pudo modificar el estado del miembro" });
-            }
+        //     string mensajeEstado = activar ? "activado" : "desactivado";
+        //     return Ok(new { mensaje = $"Miembro {mensajeEstado} con éxito" });
+        // }
 
-            string accionRealizada = activar ? "activada" : "desactivada";
-            return Ok(new { mensaje = $"Persona {accionRealizada} correctamente" });
-        }
+        // PATCH: api/personas/5/estado?activar=false
+[HttpPatch("{id}/estado")]
+public async Task<IActionResult> CambiarEstadoPersona(int id, [FromQuery] bool activar = false)
+{
+    var persona = await _context.Personas.FindAsync(id);
+
+    if (persona == null)
+    {
+        return NotFound(new { mensaje = "Persona no encontrada" });
+    }
+
+    persona.Activo = activar ? (sbyte)1 : (sbyte)0;
+    
+    // Forzar a Entity Framework a marcar la entidad como modificada
+    _context.Entry(persona).State = EntityState.Modified;
+
+    await _context.SaveChangesAsync();
+
+    string mensajeEstado = activar ? "activado" : "desactivado";
+    return Ok(new { mensaje = $"Miembro {mensajeEstado} con éxito" });
+}
 
         private bool PersonaExists(int id)
         {
