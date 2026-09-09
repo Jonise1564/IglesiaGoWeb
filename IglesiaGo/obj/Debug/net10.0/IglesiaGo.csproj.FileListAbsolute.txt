@@ -182,8 +182,6 @@ C:\Users\JSON\Desktop\IglesiaGoWeb\iglesiago\obj\Debug\net10.0\compressed\tywdyq
 C:\Users\JSON\Desktop\IglesiaGoWeb\iglesiago\obj\Debug\net10.0\compressed\mtwbzoyppm-{0}-9vr69e8ynj-9vr69e8ynj.gz
 C:\Users\JSON\Desktop\IglesiaGoWeb\iglesiago\obj\Debug\net10.0\compressed\4ljcshuyvy-{0}-87fc7y1x7t-87fc7y1x7t.gz
 C:\Users\JSON\Desktop\IglesiaGoWeb\iglesiago\obj\Debug\net10.0\compressed\66eu4vkh3p-{0}-mlv21k5csn-mlv21k5csn.gz
-C:\Users\JSON\Desktop\IglesiaGoWeb\iglesiago\obj\Debug\net10.0\compressed\jrqhl3779d-{0}-cv3qgsgktx-cv3qgsgktx.gz
-C:\Users\JSON\Desktop\IglesiaGoWeb\iglesiago\obj\Debug\net10.0\compressed\yw9k9evdcu-{0}-cv3qgsgktx-cv3qgsgktx.gz
 C:\Users\JSON\Desktop\IglesiaGoWeb\iglesiago\obj\Debug\net10.0\staticwebassets.build.json
 C:\Users\JSON\Desktop\IglesiaGoWeb\iglesiago\obj\Debug\net10.0\staticwebassets.build.json.cache
 C:\Users\JSON\Desktop\IglesiaGoWeb\iglesiago\obj\Debug\net10.0\staticwebassets.development.json
@@ -195,4 +193,8 @@ C:\Users\JSON\Desktop\IglesiaGoWeb\iglesiago\obj\Debug\net10.0\refint\IglesiaGo.
 C:\Users\JSON\Desktop\IglesiaGoWeb\iglesiago\obj\Debug\net10.0\IglesiaGo.pdb
 C:\Users\JSON\Desktop\IglesiaGoWeb\iglesiago\obj\Debug\net10.0\IglesiaGo.genruntimeconfig.cache
 C:\Users\JSON\Desktop\IglesiaGoWeb\iglesiago\obj\Debug\net10.0\ref\IglesiaGo.dll
-C:\Users\JSON\Desktop\IglesiaGoWeb\iglesiago\obj\Debug\net10.0\compressed\vxdkitojc0-{0}-k6w2pb8fmq-k6w2pb8fmq.gz
+C:\Users\JSON\Desktop\IglesiaGoWeb\iglesiago\obj\Debug\net10.0\compressed\vxdkitojc0-{0}-6hm32477ir-6hm32477ir.gz
+C:\Users\JSON\Desktop\IglesiaGoWeb\iglesiago\obj\Debug\net10.0\compressed\fp7kr2w4va-{0}-pepmjw5wg8-pepmjw5wg8.gz
+C:\Users\JSON\Desktop\IglesiaGoWeb\iglesiago\obj\Debug\net10.0\compressed\p2wblkoncv-{0}-1v222cvv8c-1v222cvv8c.gz
+C:\Users\JSON\Desktop\IglesiaGoWeb\iglesiago\obj\Debug\net10.0\compressed\jrqhl3779d-{0}-8m2n7bx9ta-8m2n7bx9ta.gz
+C:\Users\JSON\Desktop\IglesiaGoWeb\iglesiago\obj\Debug\net10.0\compressed\yw9k9evdcu-{0}-8m2n7bx9ta-8m2n7bx9ta.gz

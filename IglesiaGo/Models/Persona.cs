@@ -75,8 +75,10 @@ namespace IglesiaGo.Models
         [StringLength(50)]
         public string TipoPersona { get; set; } = "Miembro";
 
-        [Column("Activo")]
-        public sbyte? Activo { get; set; } = 1; // tinyint(1) en MySQL mapea mejor como sbyte o bool
+        // [Column("Activo")]
+        // public sbyte? Activo { get; set; } = 1; // tinyint(1) en MySQL mapea mejor como sbyte o bool
+        [Column("Activo", TypeName = "tinyint")]
+public sbyte Activo { get; set; } = 1;
 
         [Column("UsuarioId")]
         public int? UsuarioId { get; set; }

@@ -1,0 +1,201 @@
+
+
+
+
+
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using IglesiaGo.Data;
+using IglesiaGo.Models;
+
+// namespace IglesiaGo.Controllers
+namespace IglesiaGo.Controllers.Api
+{
+    [ApiController]
+    [Route("api/[controller]")]
+    public class PersonasController : ControllerBase
+    {
+        private readonly ApplicationDbContext _context;
+
+        public PersonasController(ApplicationDbContext context)
+        {
+            _context = context;
+        }
+
+        // GET: api/personas
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<Persona>>> GetPersonas([FromQuery] string? tipo)
+        {
+            var query = _context.Personas.AsQueryable();
+
+            if (!string.IsNullOrEmpty(tipo))
+            {
+                query = query.Where(p => p.TipoPersona == tipo);
+            }
+
+            return await query.ToListAsync();
+        }
+
+        // GET: api/personas/5
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Persona>> GetPersona(int id)
+        {
+            var persona = await _context.Personas.FindAsync(id);
+
+            if (persona == null)
+            {
+                return NotFound(new { mensaje = "Persona no encontrada" });
+            }
+
+            return persona;
+        }
+
+        // POST: api/personas
+        [HttpPost]
+        public async Task<ActionResult<Persona>> PostPersona(PersonaUpsertDto dto)
+        {
+            if (await _context.Personas.AnyAsync(p => p.DocumentoIdentidad == dto.DocumentoIdentidad))
+            {
+                return BadRequest(new { mensaje = "El Documento de Identidad ya se encuentra registrado" });
+            }
+
+            var nuevaPersona = new Persona
+            {
+                DocumentoIdentidad = dto.DocumentoIdentidad,
+                Nombres = dto.Nombres,
+                Apellidos = dto.Apellidos,
+                Email = dto.Email,
+                Telefono = dto.Telefono,
+                TelefonoAlternativo = dto.TelefonoAlternativo,
+                FechaNacimiento = dto.FechaNacimiento,
+                Genero = dto.Genero,
+                EstadoCivil = dto.EstadoCivil,
+                Direccion = dto.Direccion,
+                Ciudad = dto.Ciudad,
+                EstadoProvincia = dto.EstadoProvincia,
+                CodigoPostal = dto.CodigoPostal,
+                Pais = dto.Pais,
+                TipoPersona = dto.TipoPersona,
+                UsuarioId = dto.UsuarioId,
+                Activo = (sbyte)1
+            };
+
+            _context.Personas.Add(nuevaPersona);
+            await _context.SaveChangesAsync();
+
+            return CreatedAtAction(nameof(GetPersona), new { id = nuevaPersona.Id }, nuevaPersona);
+        }
+
+        // PUT: api/personas/5
+        [HttpPut("{id}")]
+        public async Task<IActionResult> PutPersona(int id, PersonaUpsertDto dto)
+        {
+            var personaExistente = await _context.Personas.FindAsync(id);
+
+            if (personaExistente == null)
+            {
+                return NotFound(new { mensaje = "Persona no encontrada" });
+            }
+
+            personaExistente.DocumentoIdentidad = dto.DocumentoIdentidad;
+            personaExistente.Nombres = dto.Nombres;
+            personaExistente.Apellidos = dto.Apellidos;
+            personaExistente.Email = dto.Email;
+            personaExistente.Telefono = dto.Telefono;
+            personaExistente.TelefonoAlternativo = dto.TelefonoAlternativo;
+            personaExistente.FechaNacimiento = dto.FechaNacimiento;
+            personaExistente.Genero = dto.Genero;
+            personaExistente.EstadoCivil = dto.EstadoCivil;
+            personaExistente.Direccion = dto.Direccion;
+            personaExistente.Ciudad = dto.Ciudad;
+            personaExistente.EstadoProvincia = dto.EstadoProvincia;
+            personaExistente.CodigoPostal = dto.CodigoPostal;
+            personaExistente.Pais = dto.Pais;
+            personaExistente.TipoPersona = dto.TipoPersona;
+            personaExistente.UsuarioId = dto.UsuarioId;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!PersonaExists(id)) return NotFound();
+                throw;
+            }
+
+            return NoContent();
+        }
+
+        // PATCH: api/personas/5/estado?activar=false
+        // [HttpPatch("{id}/estado")]
+        // public async Task<IActionResult> CambiarEstadoPersona(int id, [FromQuery] bool activar = false)
+        // {
+        //     var persona = await _context.Personas.FindAsync(id);
+
+        //     if (persona == null)
+        //     {
+        //         return NotFound(new { mensaje = "Persona no encontrada" });
+        //     }
+
+        //     // Casteo explícito a sbyte para que encaje perfectamente con el modelo
+        //     persona.Activo = activar ? (sbyte)1 : (sbyte)0;
+            
+        //     await _context.SaveChangesAsync();
+
+        //     string mensajeEstado = activar ? "activado" : "desactivado";
+        //     return Ok(new { mensaje = $"Miembro {mensajeEstado} con éxito" });
+        // }
+
+        // PATCH: api/personas/5/estado?activar=false
+// [HttpPatch("{id}/estado")]
+// public async Task<IActionResult> CambiarEstadoPersona(int id, [FromQuery] bool activar = false)
+// {
+//     var persona = await _context.Personas.FindAsync(id);
+
+//     if (persona == null)
+//     {
+//         return NotFound(new { mensaje = "Persona no encontrada" });
+//     }
+
+//     persona.Activo = activar ? (sbyte)1 : (sbyte)0;
+    
+//     // Forzar a Entity Framework a marcar la entidad como modificada
+//     _context.Entry(persona).State = EntityState.Modified;
+
+//     await _context.SaveChangesAsync();
+
+//     string mensajeEstado = activar ? "activado" : "desactivado";
+//     return Ok(new { mensaje = $"Miembro {mensajeEstado} con éxito" });
+// }
+
+
+// PATCH: api/personas/5/estado?activar=false
+[HttpPatch("{id}/estado")]
+public async Task<IActionResult> CambiarEstadoPersona(int id, [FromQuery] bool activar = false)
+{
+    sbyte nuevoEstado = activar ? (sbyte)1 : (sbyte)0;
+
+    // Actualización directa en MySQL sin cargar la entidad en memoria
+    var filasAfectadas = await _context.Personas
+        .Where(p => p.Id == id)
+        .ExecuteUpdateAsync(s => s.SetProperty(p => p.Activo, nuevoEstado));
+
+    if (filasAfectadas == 0)
+    {
+        return NotFound(new { mensaje = "Persona no encontrada" });
+    }
+
+    string mensajeEstado = activar ? "activado" : "desactivado";
+    return Ok(new { mensaje = $"Miembro {mensajeEstado} con éxito" });
+}
+
+
+
+        private bool PersonaExists(int id)
+        {
+            return _context.Personas.Any(e => e.Id == id);
+        }
+    }
+}
+
