@@ -194,7 +194,7 @@ C:\Users\JSON\Desktop\IglesiaGoWeb\iglesiago\obj\Debug\net10.0\IglesiaGo.pdb
 C:\Users\JSON\Desktop\IglesiaGoWeb\iglesiago\obj\Debug\net10.0\IglesiaGo.genruntimeconfig.cache
 C:\Users\JSON\Desktop\IglesiaGoWeb\iglesiago\obj\Debug\net10.0\ref\IglesiaGo.dll
 C:\Users\JSON\Desktop\IglesiaGoWeb\iglesiago\obj\Debug\net10.0\compressed\vxdkitojc0-{0}-6hm32477ir-6hm32477ir.gz
-C:\Users\JSON\Desktop\IglesiaGoWeb\iglesiago\obj\Debug\net10.0\compressed\fp7kr2w4va-{0}-pepmjw5wg8-pepmjw5wg8.gz
 C:\Users\JSON\Desktop\IglesiaGoWeb\iglesiago\obj\Debug\net10.0\compressed\p2wblkoncv-{0}-1v222cvv8c-1v222cvv8c.gz
 C:\Users\JSON\Desktop\IglesiaGoWeb\iglesiago\obj\Debug\net10.0\compressed\jrqhl3779d-{0}-8m2n7bx9ta-8m2n7bx9ta.gz
 C:\Users\JSON\Desktop\IglesiaGoWeb\iglesiago\obj\Debug\net10.0\compressed\yw9k9evdcu-{0}-8m2n7bx9ta-8m2n7bx9ta.gz
+C:\Users\JSON\Desktop\IglesiaGoWeb\iglesiago\obj\Debug\net10.0\compressed\fp7kr2w4va-{0}-wm7wyvs57l-wm7wyvs57l.gz

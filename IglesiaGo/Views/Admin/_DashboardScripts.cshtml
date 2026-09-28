@@ -38,6 +38,7 @@
 <script>
     let bootstrapMiembroModal;
     let bootstrapMensajeModal;
+    let bootstrapNuevoMensajeModal;
 
     document.addEventListener("DOMContentLoaded", function () {
         const miembroElem = document.getElementById('miembroModal');
@@ -48,6 +49,11 @@
         const mensajeElem = document.getElementById('mensajeModal');
         if (mensajeElem) {
             bootstrapMensajeModal = new bootstrap.Modal(mensajeElem);
+        }
+
+        const nuevoMensajeElem = document.getElementById('modalNuevoMensaje');
+        if (nuevoMensajeElem) {
+            bootstrapNuevoMensajeModal = new bootstrap.Modal(nuevoMensajeElem);
         }
 
         const alertMsg = "@Html.Raw(TempData["ResultadoPersona"] ?? "")";
@@ -220,7 +226,90 @@
         });
     }
 
-    // 2. VER DETALLE DE LA CONSULTA
+    // 2. BUSCADOR EN TIEMPO REAL PARA MENSAJES
+    function filtrarMensajes() {
+        const inputElem = document.getElementById("inputBuscarMensaje");
+        if (!inputElem) return;
+
+        const query = inputElem.value.toLowerCase().trim();
+        const filas = document.querySelectorAll("#tablaMensajes tr");
+
+        filas.forEach(fila => {
+            const texto = fila.innerText.toLowerCase();
+            fila.style.display = texto.includes(query) ? "" : "none";
+        });
+    }
+
+    // 3. ABRIR Y ENVIAR NUEVO MENSAJE
+    function abrirModalNuevoMensaje() {
+        const form = document.getElementById("formNuevoMensaje");
+        if (form) form.reset();
+
+        if (bootstrapNuevoMensajeModal) {
+            bootstrapNuevoMensajeModal.show();
+        } else {
+            const elem = document.getElementById('modalNuevoMensaje');
+            if (elem) {
+                const inst = bootstrap.Modal.getInstance(elem) || new bootstrap.Modal(elem);
+                inst.show();
+            }
+        }
+    }
+
+    async function guardarEnviarNuevoMensaje() {
+        const token = localStorage.getItem("token");
+        const destinatario = document.getElementById("nuevoDestinatario")?.value.trim();
+        const asunto = document.getElementById("nuevoAsunto")?.value.trim();
+        const contenido = document.getElementById("nuevoContenido")?.value.trim();
+
+        if (!destinatario || !asunto || !contenido) {
+            Swal.fire('Atención', 'Por favor completa todos los campos requeridos.', 'warning');
+            return;
+        }
+
+        const payload = {
+            Destinatario: destinatario,
+            Correo: destinatario,
+            Asunto: asunto,
+            Mensaje: contenido,
+            Contenido: contenido
+        };
+
+        try {
+            const res = await fetch('/api/ConsultasApi', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            });
+
+            if (res.ok) {
+                Swal.fire('¡Enviado!', 'El mensaje ha sido enviado correctamente.', 'success');
+                
+                if (bootstrapNuevoMensajeModal) {
+                    bootstrapNuevoMensajeModal.hide();
+                } else {
+                    const elem = document.getElementById('modalNuevoMensaje');
+                    if (elem) {
+                        const inst = bootstrap.Modal.getInstance(elem);
+                        if (inst) inst.hide();
+                    }
+                }
+
+                cargarMensajes();
+            } else {
+                const errData = await res.json().catch(() => ({}));
+                Swal.fire('Error', errData.mensaje || 'No se pudo enviar el mensaje.', 'error');
+            }
+        } catch (err) {
+            console.error("Error al enviar nuevo mensaje:", err);
+            Swal.fire('Error de Conexión', 'No se pudo comunicar con el servidor.', 'error');
+        }
+    }
+
+    // 4. VER DETALLE DE LA CONSULTA
     async function verMensaje(id) {
         const token = localStorage.getItem("token");
         try {
@@ -249,8 +338,8 @@
         }
     }
 
-    // 3. RESPONDER A LA CONSULTA (POST /api/ConsultasApi/Responder)
-    @* async function enviarRespuestaConsulta() {
+    // 5. RESPONDER A LA CONSULTA
+    async function enviarRespuestaConsulta() {
         const token = localStorage.getItem("token");
         const consultaId = parseInt(document.getElementById("modalConsultaId").value);
         const respuestaTexto = document.getElementById("modalRespuestaTexto").value.trim();
@@ -262,8 +351,8 @@
 
         const payload = {
             ConsultaId: consultaId,
-            Mensaje: respuestaTexto,
-            EsDelAdministrador: true
+            TipoRemitente: "Admin",
+            CuerpoMensaje: respuestaTexto
         };
 
         try {
@@ -279,74 +368,29 @@
             if (res.ok) {
                 Swal.fire('¡Enviado!', 'Respuesta guardada y consulta marcada como atendida.', 'success');
                 document.getElementById("modalRespuestaTexto").value = "";
-                if (bootstrapMensajeModal) bootstrapMensajeModal.hide();
+                
+                if (bootstrapMensajeModal) {
+                    bootstrapMensajeModal.hide();
+                } else {
+                    const modalElem = document.getElementById('mensajeModal');
+                    if (modalElem) {
+                        const instancia = bootstrap.Modal.getInstance(modalElem);
+                        if (instancia) instancia.hide();
+                    }
+                }
+                
                 cargarMensajes();
             } else {
-                const errData = await res.json();
-                Swal.fire('Error', errData.mensaje || 'Error al enviar respuesta.', 'error');
+                const errData = await res.json().catch(() => ({}));
+                Swal.fire('Error', errData.mensaje || errData.detalle || 'Error al enviar la respuesta.', 'error');
             }
         } catch (err) {
+            console.error("Error al enviar respuesta:", err);
             Swal.fire('Error', 'No se pudo conectar con el servidor.', 'error');
         }
-    } *@
-
-
-
-
-
-// RESPONDER A LA CONSULTA (Corrige el payload para MensajeConsulta)
-async function enviarRespuestaConsulta() {
-    const token = localStorage.getItem("token");
-    const consultaId = parseInt(document.getElementById("modalConsultaId").value);
-    const respuestaTexto = document.getElementById("modalRespuestaTexto").value.trim();
-
-    if (!respuestaTexto) {
-        Swal.fire('Atención', 'Escribe un mensaje para responder.', 'warning');
-        return;
     }
 
-    // Estrategia defensiva: Enviamos las claves para MensajeConsulta
-    const payload = {
-        ConsultaId: consultaId,
-        TipoRemitente: "Admin",
-        CuerpoMensaje: respuestaTexto
-    };
-
-    try {
-        const res = await fetch('/api/ConsultasApi/Responder', {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(payload)
-        });
-
-        if (res.ok) {
-            Swal.fire('¡Enviado!', 'Respuesta guardada y consulta marcada como atendida.', 'success');
-            document.getElementById("modalRespuestaTexto").value = "";
-            
-            if (bootstrapMensajeModal) {
-                bootstrapMensajeModal.hide();
-            } else {
-                const modalElem = document.getElementById('mensajeModal');
-                if (modalElem) {
-                    const instancia = bootstrap.Modal.getInstance(modalElem);
-                    if (instancia) instancia.hide();
-                }
-            }
-            
-            cargarMensajes(); // Recargar la tabla para actualizar el estado
-        } else {
-            const errData = await res.json().catch(() => ({}));
-            Swal.fire('Error', errData.mensaje || errData.detalle || 'Error al enviar la respuesta.', 'error');
-        }
-    } catch (err) {
-        console.error("Error al enviar respuesta:", err);
-        Swal.fire('Error', 'No se pudo conectar con el servidor.', 'error');
-    }
-}
-    // 4. ELIMINAR CONSULTA (DELETE /api/ConsultasApi/{id})
+    // 6. ELIMINAR CONSULTA (DELETE /api/ConsultasApi/{id})
     function eliminarMensaje(id) {
         Swal.fire({
             title: '¿Eliminar consulta?',
@@ -389,7 +433,6 @@ async function enviarRespuestaConsulta() {
         });
     }
 
-    // CORRECCIÓN CLAVE: Invocación directa del endpoint PATCH con Query Parameter
     function confirmarCambioEstado(id, nombre, volverActivar) {
         const titulo = volverActivar ? '¿Activar miembro?' : '¿Desactivar miembro?';
         const texto = volverActivar
@@ -410,7 +453,6 @@ async function enviarRespuestaConsulta() {
                 try {
                     const token = localStorage.getItem("token");
 
-                    // PATCH directo a /api/personas/{id}/estado?activar=true (o false)
                     const response = await fetch(`/api/personas/${id}/estado?activar=${volverActivar}`, {
                         method: 'PATCH',
                         headers: {
@@ -448,4 +490,65 @@ async function enviarRespuestaConsulta() {
             }
         });
     }
+
+
+
+@* function filtrarPorTipo(tipo) {
+    // 1. Activar la pestaña "Miembros"
+    const miembrosTab = document.getElementById('miembros-tab');
+    if (miembrosTab) {
+        const tabInstance = bootstrap.Tab.getOrCreateInstance(miembrosTab);
+        tabInstance.show();
+    }
+
+    // 2. Asignar el valor al buscador de la tabla de miembros
+    const inputBuscador = document.getElementById('tablaBuscador');
+    if (inputBuscador) {
+        inputBuscador.value = tipo;
+        
+        // Ejecutar la función de búsqueda de la tabla de miembros
+        if (typeof buscarMiembro === 'function') {
+            buscarMiembro();
+        } else {
+            // Filtrado fallback en JavaScript directo sobre las filas de la tabla
+            const filas = document.querySelectorAll("#tablaMiembros tbody tr");
+            const termino = tipo.toLowerCase();
+
+            filas.forEach(fila => {
+                const texto = fila.innerText.toLowerCase();
+                fila.style.display = texto.includes(termino) ? "" : "none";
+            });
+        }
+    }
+} *@
+
+function filtrarPorTipo(tipo) {
+    // 1. Activar pestaña Miembros
+    const miembrosTab = document.getElementById('miembros-tab');
+    if (miembrosTab) {
+        const tabInstance = bootstrap.Tab.getOrCreateInstance(miembrosTab);
+        tabInstance.show();
+    }
+
+    // 2. Filtrar tabla
+    const inputBuscador = document.getElementById('tablaBuscador');
+    if (inputBuscador) {
+        inputBuscador.value = tipo;
+    }
+
+    const filas = document.querySelectorAll("#tablaMiembros tbody tr");
+    filas.forEach(fila => {
+        const texto = fila.innerText.toLowerCase();
+        
+        if (tipo.toLowerCase() === 'liderazgo') {
+            // Coincide con Liderazgo, Líder o Pastor
+            const esLiderazgo = texto.includes('liderazgo') || texto.includes('líder') || texto.includes('lider') || texto.includes('pastor');
+            fila.style.display = esLiderazgo ? "" : "none";
+        } else {
+            fila.style.display = texto.includes(tipo.toLowerCase()) ? "" : "none";
+        }
+    });
+}
+
+
 </script>

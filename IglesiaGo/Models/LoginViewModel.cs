@@ -1,4 +1,4 @@
-namespace IglesiaGo.Models; // Fíjate que termine en .Models
+namespace IglesiaGo.Models; 
 
 public class LoginViewModel
 {

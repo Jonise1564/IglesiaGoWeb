@@ -1,48 +1,73 @@
 @model IEnumerable<IglesiaGo.Models.Persona>
 
 <div class="row mb-4">
+    <!-- Total Miembros (Muestra todos) -->
     <div class="col-md-3">
-        <div class="card border-0 shadow-sm bg-primary text-white p-3">
+        <div class="card bg-primary text-white p-3 shadow-sm" style="cursor: pointer;" onclick="filtrarPorTipo('')">
             <div class="d-flex justify-content-between align-items-center">
                 <div>
-                    <h6 class="text-uppercase small mb-1 opacity-75">Total Miembros</h6>
-                    <h3 class="fw-bold m-0">@Model.Count()</h3>
+                    <h6 class="text-uppercase mb-1 small">Total Miembros</h6>
+                    <h2 class="fw-bold mb-0">@Model.Count()</h2>
                 </div>
                 <i class="fa-solid fa-users fa-2x opacity-50"></i>
             </div>
         </div>
     </div>
+
+    <!-- Músicos -->
     <div class="col-md-3">
-        <div class="card border-0 shadow-sm bg-success text-white p-3">
+        <div class="card bg-success text-white p-3 shadow-sm" style="cursor: pointer;" onclick="filtrarPorTipo('músico')">
             <div class="d-flex justify-content-between align-items-center">
                 <div>
-                    <h6 class="text-uppercase small mb-1 opacity-75">Músicos</h6>
-                    <h3 class="fw-bold m-0">@Model.Count(p => p.TipoPersona == "Músico")</h3>
+                    <h6 class="text-uppercase mb-1 small">Músicos</h6>
+                    <h2 class="fw-bold mb-0">@Model.Count(p => p.TipoPersona == "Músico" || p.TipoPersona == "Musico")</h2>
                 </div>
                 <i class="fa-solid fa-guitar fa-2x opacity-50"></i>
             </div>
         </div>
     </div>
+
+    <!-- Multimedia -->
     <div class="col-md-3">
-        <div class="card border-0 shadow-sm bg-info text-white p-3">
+        <div class="card bg-info text-white p-3 shadow-sm" style="cursor: pointer;" onclick="filtrarPorTipo('multimedia')">
             <div class="d-flex justify-content-between align-items-center">
                 <div>
-                    <h6 class="text-uppercase small mb-1 opacity-75">Multimedia</h6>
-                    <h3 class="fw-bold m-0">@Model.Count(p => p.TipoPersona == "Multimedia")</h3>
+                    <h6 class="text-uppercase mb-1 small">Multimedia</h6>
+                    <h2 class="fw-bold mb-0">@Model.Count(p => p.TipoPersona == "Multimedia")</h2>
                 </div>
                 <i class="fa-solid fa-camera fa-2x opacity-50"></i>
             </div>
         </div>
     </div>
+
+    <!-- Liderazgo -->
+
     <div class="col-md-3">
-        <div class="card border-0 shadow-sm bg-warning text-dark p-3">
-            <div class="d-flex justify-content-between align-items-center">
-                <div>
-                    <h6 class="text-uppercase small mb-1 opacity-75">Liderazgo</h6>
-                    <h3 class="fw-bold m-0">@Model.Count(p => p.TipoPersona == "Pastor" || p.TipoPersona == "Diácono")</h3>
-                </div>
-                <i class="fa-solid fa-user-tie fa-2x opacity-25"></i>
+    <div class="card bg-warning text-dark p-3 shadow-sm" style="cursor: pointer;" onclick="filtrarPorTipo('liderazgo')">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h6 class="text-uppercase mb-1 small">Liderazgo</h6>
+                <h2 class="fw-bold mb-0">
+                    @Model.Count(p => p.TipoPersona == "Liderazgo" || 
+                                     p.TipoPersona == "Líder" || 
+                                     p.TipoPersona == "Lider" || 
+                                     p.TipoPersona == "Pastor")
+                </h2>
             </div>
+            <i class="fa-solid fa-user-tie fa-2x opacity-50"></i>
         </div>
     </div>
+</div>
+
+    @* <div class="col-md-3">
+        <div class="card bg-warning text-dark p-3 shadow-sm" style="cursor: pointer;" onclick="filtrarPorTipo('liderazgo')">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h6 class="text-uppercase mb-1 small">Liderazgo</h6>
+                    <h2 class="fw-bold mb-0">@Model.Count(p => p.TipoPersona == "Liderazgo" || p.TipoPersona == "Líder")</h2>
+                </div>
+                <i class="fa-solid fa-user-tie fa-2x opacity-50"></i>
+            </div>
+        </div>
+    </div> *@
 </div>

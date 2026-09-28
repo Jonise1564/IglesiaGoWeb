@@ -1,4 +1,4 @@
-@model List<IglesiaGo.Models.Enseñanza>
+@* @model List<IglesiaGo.Models.Enseñanza>
 @{
     ViewData["Title"] = "Enseñanzas";
 }
@@ -36,4 +36,100 @@
             </div>
         }
     </div>
+</div> *@
+
+
+
+@model List<IglesiaGo.Models.Enseñanza>
+@{
+    ViewData["Title"] = "Enseñanzas";
+}
+
+<div class="bg-dark text-white py-5 mb-5">
+    <div class="container text-center">
+        <h1 class="display-5 fw-bold">ENSEÑANZAS BÍBLICAS</h1>
+        <p>Crecimiento espiritual a un clic de distancia.</p>
+    </div>
 </div>
+
+<div class="container">
+    <div class="row">
+        @if (Model != null && Model.Any())
+        {
+            foreach (var item in Model)
+            {
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="ratio ratio-16x9">
+                            <iframe src="@item.VideoUrl" title="YouTube video" allowfullscreen></iframe>
+                        </div>
+                        <div class="card-body">
+                            <!-- Se envuelve el título con el disparador del modal y se pasan datos mediante data-* -->
+                            <h5 class="card-title fw-bold">
+                                <a href="#" 
+                                   class="text-decoration-none text-dark"
+                                   data-bs-toggle="modal" 
+                                   data-bs-target="#modalDetalleEnsenanza"
+                                   data-titulo="@item.Titulo"
+                                   data-video="@item.VideoUrl"
+                                   data-contenido="@item.Contenido">
+                                    @item.Titulo
+                                </a>
+                            </h5>
+                            <p class="card-text text-muted">@item.Contenido.Substring(0, Math.Min(item.Contenido.Length, 80))...</p>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="text-center py-5">
+                <p class="text-muted">Próximamente subiremos nuevas enseñanzas.</p>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- Modal para ver la Enseñanza Completa sin alterar la tarjeta original -->
+<div class="modal fade" id="modalDetalleEnsenanza" tabindex="-1" aria-labelledby="modalDetalleLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title fw-bold" id="modalDetalleTitulo"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="ratio ratio-16x9 mb-3">
+                    <iframe id="modalDetalleVideo" src="" title="YouTube video" allowfullscreen></iframe>
+                </div>
+                <div class="text-secondary" id="modalDetalleContenido" style="white-space: pre-line;"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const modalDetalle = document.getElementById('modalDetalleEnsenanza');
+        const iframeVideo = document.getElementById('modalDetalleVideo');
+
+        modalDetalle.addEventListener('show.bs.modal', function (event) {
+            const button = event.relatedTarget;
+            const titulo = button.getAttribute('data-titulo') || '';
+            const video = button.getAttribute('data-video') || '';
+            const contenido = button.getAttribute('data-contenido') || '';
+
+            document.getElementById('modalDetalleTitulo').textContent = titulo;
+            document.getElementById('modalDetalleContenido').textContent = contenido;
+            iframeVideo.src = video;
+        });
+
+        modalDetalle.addEventListener('hidden.bs.modal', function () {
+            iframeVideo.src = '';
+        });
+    });
+</script>

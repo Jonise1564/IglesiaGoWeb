@@ -1,29 +1,26 @@
-﻿@* @{
-    ViewData["Title"] = "Home Page";
-}
-
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div> *@
-
-
-@model List<IglesiaGo.Models.Noticia>
+﻿@model List<IglesiaGo.Models.Noticia>
 @{
     ViewData["Title"] = "Inicio";
 }
 
-<div class="position-relative overflow-hidden p-3 p-md-5 text-center bg-dark" 
-     style="background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://images.unsplash.com/photo-1510519133411-c67220b665e0?q=80&w=2070'); 
-            background-size: cover; background-position: center; min-height: 80vh; display: flex; align-items: center;">
-    <div class="col-md-6 p-lg-5 mx-auto my-5 text-white">
-        <h1 class="display-3 fw-bold" style="letter-spacing: -1px;">EXPERIMENTA SU PRESENCIA</h1>
-        <p class="lead fw-normal text-uppercase mb-4" style="letter-spacing: 4px; font-size: 14px;">Un lugar para conectar con Dios</p>
-        <a class="btn btn-outline-light px-5 py-2 fw-bold" style="border-radius: 0; font-size: 12px;" asp-action="Ensenanzas">VER ENSEÑANZAS</a>
+<div class="position-relative overflow-hidden text-center text-white" 
+     style="background-color: #212529; min-height: 220px; display: flex; align-items: center; justify-content: center; padding: 2rem 0;">
+    <div class="container">
+        <h1 class="fw-bold mb-2 text-uppercase" style="letter-spacing: -1px; font-size: 2.5rem;">
+            EXPERIMENTA SU PRESENCIA
+        </h1>
+        <p class="lead mb-3 text-uppercase opacity-75" style="letter-spacing: 2px; font-size: 13px;">
+            Un lugar para conectar con Dios
+        </p>
+        <div>
+            <a class="btn btn-outline-light px-4 py-1 fw-bold" style="border-radius: 0; font-size: 11px; letter-spacing: 1px;" asp-action="Ensenanzas">
+                VER ENSEÑANZAS
+            </a>
+        </div>
     </div>
 </div>
 
-<div class="container my-5 py-5">
+<div class="container my-5 py-3">
     <div class="text-center mb-5">
         <h2 class="fw-bold" style="letter-spacing: -1px;">LO ÚLTIMO EN IGLESIAGO</h2>
         <div class="mx-auto" style="width: 50px; height: 2px; background-color: #000;"></div>
@@ -41,7 +38,9 @@
                         </div>
                         <div class="card-body px-0 pt-4">
                             <p class="text-muted small mb-2">@noticia.Fecha.ToString("dd MMMM, yyyy").ToUpper()</p>
-                            <h5 class="card-title fw-bold" style="font-size: 18px; line-height: 1.4;">@noticia.Cuerpo.Substring(0, Math.Min(noticia.Cuerpo.Length, 60))...</h5>
+                            <h5 class="card-title fw-bold" style="font-size: 18px; line-height: 1.4;">
+                                @(noticia.Cuerpo != null ? noticia.Cuerpo.Substring(0, Math.Min(noticia.Cuerpo.Length, 60)) : "")...
+                            </h5>
                             <a href="#" class="btn btn-link p-0 text-dark fw-bold text-decoration-none mt-2" style="font-size: 12px;">LEER MÁS →</a>
                         </div>
                     </div>
